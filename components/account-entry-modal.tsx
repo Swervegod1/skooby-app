@@ -65,6 +65,7 @@ export function AccountEntryModal() {
               >
                 <span className="rounded-full bg-lime-300 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-black">Best place to start</span>
                 <h3 className="mt-5 text-3xl font-black">Skooby Free</h3>
+                <p className="mt-1 text-sm font-black text-lime-200">$0</p>
                 <p className="mt-2 text-sm leading-6 text-white/50">Track wallets, learn interactively, save investigations, and start building your personal command center.</p>
                 <div className="mt-6 rounded-full bg-lime-300 px-5 py-3 text-center text-sm font-black text-black group-hover:bg-lime-200">
                   {!ready ? 'Preparing…' : authenticated ? 'Open free account' : 'Create free account'}
@@ -79,9 +80,10 @@ export function AccountEntryModal() {
               >
                 <span className="rounded-full border border-fuchsia-200/20 bg-fuchsia-200/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-fuchsia-100">Power users</span>
                 <h3 className="mt-5 text-3xl font-black">Skooby Pro</h3>
+                <p className="mt-1 text-sm font-black text-fuchsia-100">$9.99 / month</p>
                 <p className="mt-2 text-sm leading-6 text-white/50">Designed for deeper graph history, higher usage limits, richer monitoring, exports, and premium research features.</p>
                 <div className="mt-6 rounded-full border border-fuchsia-200/25 bg-fuchsia-200/10 px-5 py-3 text-center text-sm font-black text-fuchsia-50 group-hover:bg-fuchsia-200/15">
-                  {authenticated ? 'View Pro upgrade' : 'Sign in & view Pro'}
+                  {authenticated ? 'Continue to Pro' : 'Sign in & continue to Pro'}
                 </div>
               </button>
             </div>
