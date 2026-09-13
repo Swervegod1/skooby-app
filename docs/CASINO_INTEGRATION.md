@@ -1,33 +1,57 @@
-# Casino Integration Boundary
+# Skooby Casino Integration
 
-Skooby.app includes a dedicated `/casino` product surface inspired by the architecture of `0xdivi-code/web3-casino`.
+Skooby.app includes a dedicated `/casino` play-credit product surface modeled on the public API contract documented by `0xdivi-code/web3-casino`.
 
 Reference repository: https://github.com/0xdivi-code/web3-casino
 
-## What Skooby uses
+## Architecture
 
-- A separate game-provider surface rather than mixing game code into wallet analytics.
-- A catalog-style UI that can represent multiple games.
-- An adapter boundary where a reviewed provider could be connected later.
-- Clear separation between authentication, wallet intelligence, and gaming modules.
+- Privy remains Skooby's browser authentication and wallet layer.
+- Casino traffic stays behind dedicated `/api/game/*` routes.
+- Sandbox provider credentials are server-only.
+- If no sandbox provider is configured, Skooby runs its built-in play-credit simulation engine.
+- No deposit, withdrawal, cash-payout, or real-money wallet endpoints are exposed by this integration.
 
-## What Skooby does not import
+## Supported game routes
 
-The referenced repository does not declare a top-level repository license. Skooby therefore does not copy its application source wholesale. The current integration is independently written and uses the reference only as architectural inspiration.
+- `POST /api/game/slots/spin`
+- `GET /api/game/slots/history`
+- `GET /api/game/slots/config`
+- `GET /api/game/slots/leaderboard`
+- `POST /api/game/blackjack/start`
+- `POST /api/game/blackjack/hit`
+- `POST /api/game/blackjack/stand`
+- `POST /api/game/blackjack/double`
+- `POST /api/game/blackjack/split`
+- `POST /api/game/baccarat/start`
+- `GET /api/game/baccarat/history`
+- `POST /api/game/crash/bet`
+- `POST /api/game/crash/cashout`
+- `GET /api/game/crash/status`
+- `POST /api/game/dice/roll`
+- `GET /api/game/dice/history`
+- `POST /api/game/roulette/bet`
+- `POST /api/game/roulette/spin`
+- `GET /api/game/roulette/result`
+- `POST /api/game/poker/join`
+- `POST /api/game/poker/bet`
+- `POST /api/game/poker/fold`
+- `POST /api/game/poker/action`
 
-The Skooby implementation also does not enable:
+## Demo mode
 
-- real-money bets;
-- token or crypto wagering;
-- deposits or withdrawals for gaming;
-- automated payouts;
-- hidden wallet signing;
-- custody of user funds.
+When `CASINO_API_BASE_URL` is empty, the routes use Skooby's local simulation engine. Demo credits have no cash value and are not persisted.
 
-## Production requirements
+## Sandbox provider mode
 
-Any future production gaming provider should remain disabled until the operator has completed the legal, licensing, jurisdiction, age-verification/KYC, responsible-gaming, security, and provider-contract review required for the intended markets.
+Set `CASINO_API_BASE_URL` to a test/sandbox deployment that implements the referenced game paths. If the sandbox requires a server bearer token, set `CASINO_API_TOKEN`. The browser never receives this token.
+
+If the sandbox is unavailable, Skooby falls back to demo mode unless `CASINO_ALLOW_DEMO_FALLBACK=false`.
+
+## Licensing boundary
+
+The referenced repository does not declare a top-level project license. Skooby therefore does not copy the referenced application source wholesale. The implementation in this repository is independently written around the documented API shape.
 
 ## Security boundary
 
-Game-provider code must never receive seed phrases, private keys, Privy app secrets, or unrestricted signing credentials. Wallet transactions, if ever introduced for a reviewed non-gambling use case, must present the chain, contract, asset, amount, and destination to the user before approval.
+Game-provider code must never receive seed phrases, private keys, Privy app secrets, or unrestricted signing credentials. Keep all provider credentials outside `NEXT_PUBLIC_*` variables.
