@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { ConnectWallet } from '@/components/connect-wallet';
+import { GpuGiveaway } from '@/components/gpu-giveaway';
+import { HomeHelpAssociate } from '@/components/home-help-associate';
 
 const modules = [
   {
@@ -75,7 +77,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="relative mx-auto max-w-6xl px-6 pb-24 pt-6">
+      <section className="relative mx-auto max-w-6xl px-6 pb-20 pt-6">
         <div className="grid gap-4 md:grid-cols-2">
           {modules.map((module) => (
             <Link key={module.title} href={module.href} className="group rounded-3xl border border-white/10 bg-white/[0.035] p-6 transition hover:-translate-y-1 hover:bg-white/[0.06]">
@@ -88,7 +90,10 @@ export default function Home() {
         </div>
       </section>
 
+      <GpuGiveaway />
+
       <footer className="relative border-t border-white/8 px-6 py-8 text-center text-sm text-white/40">Skooby.app · Web3 research tools that help you understand the trail.</footer>
+      <HomeHelpAssociate />
     </main>
   );
 }
