@@ -170,7 +170,7 @@ export function casinoProviderStatus() {
 }
 
 export async function dispatchCasinoRequest(input: CasinoDispatchInput): Promise<CasinoDispatchResult> {
-  const { game, action, method, payload, authorization } = input;
+  const { game, action, method, payload } = input;
 
   if (!isKnownRoute(game, action)) {
     return { ok: false, status: 404, mode: 'demo', body: { error: 'Unknown casino game/action.' } };
@@ -184,11 +184,10 @@ export async function dispatchCasinoRequest(input: CasinoDispatchInput): Promise
   const baseUrl = process.env.CASINO_API_BASE_URL?.replace(/\/$/, '');
   if (baseUrl) {
     try {
-      const token = process.env.CASINO_API_TOKEN;
+      const providerToken = process.env.CASINO_API_TOKEN;
       const headers = new Headers({ Accept: 'application/json' });
       if (method === 'POST') headers.set('Content-Type', 'application/json');
-      if (token) headers.set('Authorization', `Bearer ${token}`);
-      else if (authorization) headers.set('Authorization', authorization);
+      if (providerToken) headers.set('Authorization', `Bearer ${providerToken}`);
 
       const response = await fetch(`${baseUrl}${route.path}`, {
         method,
