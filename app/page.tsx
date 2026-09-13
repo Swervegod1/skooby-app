@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ConnectWallet } from '@/components/connect-wallet';
+import { HomeHelpAssociate } from '@/components/home-help-associate';
 
 const modules = [
   {
@@ -89,6 +90,7 @@ export default function Home() {
       </section>
 
       <footer className="relative border-t border-white/8 px-6 py-8 text-center text-sm text-white/40">Skooby.app · Web3 research tools that help you understand the trail.</footer>
+      <HomeHelpAssociate />
     </main>
   );
 }
