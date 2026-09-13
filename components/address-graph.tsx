@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 export type AddressGraphNode = { id: string; label: string; kind: 'focus' | 'wallet'; value?: number };
 export type AddressGraphEdge = { id: string; from: string; to: string; value: number; txid: string };
@@ -13,23 +13,20 @@ export function AddressGraph({ nodes, edges }: { nodes: AddressGraphNode[]; edge
   const [selectedId, setSelectedId] = useState(nodes[0]?.id ?? '');
   const width = 820;
   const height = 520;
-  const center = { x: width / 2, y: height / 2 };
-
-  const positions = useMemo(() => {
-    const map = new Map<string, { x: number; y: number }>();
-    const focus = nodes.find((node) => node.kind === 'focus') ?? nodes[0];
-    if (focus) map.set(focus.id, center);
-    const others = nodes.filter((node) => node.id !== focus?.id);
-    others.forEach((node, index) => {
-      const ring = index < 10 ? 1 : 2;
-      const ringItems = ring === 1 ? Math.min(10, others.length) : Math.max(1, others.length - 10);
-      const ringIndex = ring === 1 ? index : index - 10;
-      const radius = ring === 1 ? 155 : 225;
-      const angle = (Math.PI * 2 * ringIndex) / ringItems - Math.PI / 2;
-      map.set(node.id, { x: center.x + Math.cos(angle) * radius, y: center.y + Math.sin(angle) * radius });
-    });
-    return map;
-  }, [nodes]);
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const positions = new Map<string, { x: number; y: number }>();
+  const focus = nodes.find((node) => node.kind === 'focus') ?? nodes[0];
+  if (focus) positions.set(focus.id, { x: centerX, y: centerY });
+  const others = nodes.filter((node) => node.id !== focus?.id);
+  others.forEach((node, index) => {
+    const ring = index < 10 ? 1 : 2;
+    const ringItems = ring === 1 ? Math.min(10, others.length) : Math.max(1, others.length - 10);
+    const ringIndex = ring === 1 ? index : index - 10;
+    const radius = ring === 1 ? 155 : 225;
+    const angle = (Math.PI * 2 * ringIndex) / ringItems - Math.PI / 2;
+    positions.set(node.id, { x: centerX + Math.cos(angle) * radius, y: centerY + Math.sin(angle) * radius });
+  });
 
   const selected = nodes.find((node) => node.id === selectedId) ?? nodes[0];
   const relatedEdges = selected ? edges.filter((edge) => edge.from === selected.id || edge.to === selected.id) : [];
