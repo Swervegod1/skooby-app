@@ -24,6 +24,15 @@ const names: Record<string, { name: string; symbol: string }> = {
   chainlink: { name: 'Chainlink', symbol: 'LINK' },
 };
 
+async function fetchMarket(): Promise<MarketResponse> {
+  try {
+    const response = await fetch('/api/market', { cache: 'no-store' });
+    return await response.json();
+  } catch {
+    return { error: 'Unable to reach Skooby market feed.' };
+  }
+}
+
 function money(value?: number) {
   if (value === undefined) return '—';
   return new Intl.NumberFormat('en-US', {
@@ -49,20 +58,29 @@ export function MarketTracker() {
 
   async function refresh() {
     setLoading(true);
-    try {
-      const response = await fetch('/api/market', { cache: 'no-store' });
-      setPayload(await response.json());
-    } catch {
-      setPayload({ error: 'Unable to reach Skooby market feed.' });
-    } finally {
-      setLoading(false);
-    }
+    const next = await fetchMarket();
+    setPayload(next);
+    setLoading(false);
   }
 
   useEffect(() => {
-    void refresh();
-    const timer = window.setInterval(() => void refresh(), 60_000);
-    return () => window.clearInterval(timer);
+    let active = true;
+
+    const load = async () => {
+      const next = await fetchMarket();
+      if (active) {
+        setPayload(next);
+        setLoading(false);
+      }
+    };
+
+    void load();
+    const timer = window.setInterval(() => void load(), 60_000);
+
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+    };
   }, []);
 
   if (loading && !payload) {
