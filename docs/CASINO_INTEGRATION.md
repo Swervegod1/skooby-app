@@ -10,7 +10,14 @@ Reference repository: https://github.com/0xdivi-code/web3-casino
 - Casino traffic stays behind dedicated `/api/game/*` routes.
 - Sandbox provider credentials are server-only.
 - If no sandbox provider is configured, Skooby runs its built-in play-credit simulation engine.
-- No deposit, withdrawal, cash-payout, or real-money wallet endpoints are exposed by this integration.
+- No deposit, withdrawal, cash-payout, custody, or real-money wallet endpoints are exposed by Skooby.
+- An optional external-provider handoff can send users to a separately operated provider site; any account funding, withdrawals, custody, payouts, or regulated gaming activity remain on that provider's service and terms.
+
+## External provider handoff
+
+Set `CASINO_PUBLIC_LAUNCH_URL` to the provider's public launch URL and optionally set `CASINO_PROVIDER_NAME` for display. When configured, `/casino` displays an `Open provider` handoff link.
+
+Skooby does not proxy funding or withdrawal requests through this handoff and does not receive provider wallet credentials or custody user funds.
 
 ## Supported game routes
 
