@@ -16,7 +16,7 @@ function ConfiguredConnectButton() {
   if (authenticated) {
     return (
       <button
-        onClick={logout}
+        onClick={() => void logout()}
         className="rounded-full border border-white/15 bg-white/10 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/15"
         title={user?.wallet?.address ?? 'Connected'}
       >
@@ -27,7 +27,7 @@ function ConfiguredConnectButton() {
 
   return (
     <button
-      onClick={login}
+      onClick={() => login()}
       className="rounded-full bg-lime-300 px-5 py-3 text-sm font-bold text-black transition hover:scale-[1.02] hover:bg-lime-200"
     >
       Connect with Skooby
