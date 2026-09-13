@@ -13,14 +13,13 @@ export const dynamic = 'force-dynamic';
 
 export default async function AccountPage() {
   const session = await getServerSession();
-  const privyConfigured = Boolean(process.env.NEXT_PUBLIC_PRIVY_APP_ID);
 
   if (!session) {
     return (
       <main className="min-h-screen bg-[#06100c] text-white">
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6"><Link href="/" className="text-xl font-black">SKOOBY<span className="text-lime-300">.APP</span></Link><Link href="/tracker" className="text-sm font-black text-white/55">Tracker</Link></nav>
         <section className="mx-auto max-w-6xl px-6 pb-24 pt-16">
-          {privyConfigured ? <AccountLogin /> : <div className="rounded-[2rem] border border-amber-300/20 bg-amber-300/[0.05] p-8"><p className="text-xs font-black uppercase tracking-[0.2em] text-amber-200">Account configuration</p><h1 className="mt-3 text-4xl font-black">Sign-in is not configured yet.</h1><p className="mt-3 max-w-2xl leading-7 text-white/55">Add the public Privy application ID and server verification settings to enable email and wallet account sessions. The page fails closed instead of hanging on a loading state.</p></div>}
+          <AccountLogin />
         </section>
       </main>
     );
@@ -44,7 +43,7 @@ export default async function AccountPage() {
       <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_80%_0%,rgba(163,230,53,0.10),transparent_25%),radial-gradient(circle_at_5%_25%,rgba(217,70,239,0.08),transparent_24%)]" />
       <nav className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
         <Link href="/" className="text-xl font-black">SKOOBY<span className="text-lime-300">.APP</span></Link>
-        <div className="flex items-center gap-4"><Link href="/tracker" className="text-sm font-black text-white/55">Tracker</Link>{privyConfigured ? <AccountSignOut /> : null}</div>
+        <div className="flex items-center gap-4"><Link href="/tracker" className="text-sm font-black text-white/55">Tracker</Link><AccountSignOut /></div>
       </nav>
 
       <section className="relative mx-auto max-w-7xl px-6 pb-24 pt-10">
