@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useState } from 'react';
 
 const QUICK = [
   { label: 'Track a wallet', href: '/tracker' },
@@ -10,37 +10,58 @@ const QUICK = [
   { label: 'My account', href: '/account' },
 ];
 
-function answerFor(input: string) {
+function routeFor(input: string) {
   const text = input.toLowerCase();
-  if (text.includes('track') || text.includes('address') || text.includes('wallet')) {
-    return { text: 'Use Crypto Tracker to inspect a public Bitcoin or Ethereum address, map connected wallets, and save the investigation to your casebook.', href: '/tracker', cta: 'Open Tracker' };
-  }
-  if (text.includes('learn') || text.includes('gas') || text.includes('bitcoin') || text.includes('ethereum')) {
-    return { text: 'Skooby Learn has interactive Bitcoin and Ethereum lessons, including gas-fee tools and visual transaction flows.', href: '/learn', cta: 'Open Learn' };
-  }
-  if (text.includes('login') || text.includes('account') || text.includes('alert') || text.includes('casebook')) {
-    return { text: 'Your Account Command Center holds synced investigations, wallet alerts, and usage information once you sign in.', href: '/account', cta: 'Open Account' };
-  }
-  if (text.includes('connect') || text.includes('base') || text.includes('balance')) {
-    return { text: 'Wallet Intelligence connects through Privy so you can inspect wallet identity and Base balance data without sharing a seed phrase.', href: '/wallet', cta: 'Open Wallet Intelligence' };
-  }
-  if (text.includes('giveaway') || text.includes('gpu') || text.includes('5090') || text.includes('raffle')) {
-    return { text: 'The RTX 5090 giveaway entry form is at the bottom of this page. Entry is free and limited to one registration per email.', href: '#gpu-giveaway', cta: 'Jump to Giveaway' };
-  }
-  return { text: 'I can point you to wallet tracking, interactive learning, account tools, wallet connection, or the GPU giveaway. Try asking what you want to do.', href: '/tracker', cta: 'Explore Tracker' };
+  if (/(giveaway|gpu|5090|raffle)/.test(text)) return { href: '#gpu-giveaway', cta: 'Jump to Giveaway' };
+  if (/(learn|gas|bitcoin|ethereum)/.test(text)) return { href: '/learn', cta: 'Open Learn' };
+  if (/(login|account|alert|casebook)/.test(text)) return { href: '/account', cta: 'Open Account' };
+  if (/(connect|base|balance)/.test(text)) return { href: '/wallet', cta: 'Open Wallet Intelligence' };
+  return { href: '/tracker', cta: 'Open Tracker' };
+}
+
+function localFallback(input: string) {
+  const text = input.toLowerCase();
+  if (/(giveaway|gpu|5090|raffle)/.test(text)) return 'The RTX 5090 giveaway form is at the bottom of the homepage. Entry is free and limited to one registration per email.';
+  if (/(learn|gas|bitcoin|ethereum)/.test(text)) return 'Skooby Learn has interactive Bitcoin and Ethereum lessons, including gas-fee tools and visual transaction flows.';
+  if (/(login|account|alert|casebook)/.test(text)) return 'Your Account Command Center holds synced investigations, wallet alerts, and usage information once you sign in.';
+  if (/(connect|base|balance)/.test(text)) return 'Wallet Intelligence connects through Privy so you can inspect wallet identity and Base balance data without sharing a seed phrase.';
+  return 'Use Crypto Tracker to inspect a public Bitcoin or Ethereum address, map connected wallets, and save the investigation to your casebook.';
 }
 
 export function HomeHelpAssociate() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [submitted, setSubmitted] = useState('');
-  const response = useMemo(() => answerFor(submitted), [submitted]);
+  const [answer, setAnswer] = useState('');
+  const [mode, setMode] = useState<'ai' | 'guided' | null>(null);
+  const [loading, setLoading] = useState(false);
+  const route = routeFor(submitted);
 
-  function submit(event: FormEvent<HTMLFormElement>) {
+  async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const value = query.trim();
-    if (!value) return;
+    if (!value || loading) return;
+
     setSubmitted(value);
+    setLoading(true);
+    setAnswer('');
+
+    try {
+      const response = await fetch('/api/help', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: value }),
+      });
+      const payload = (await response.json()) as { answer?: string; mode?: 'ai' | 'guided' };
+      if (!response.ok || !payload.answer) throw new Error('Assistant unavailable.');
+      setAnswer(payload.answer);
+      setMode(payload.mode ?? 'guided');
+    } catch {
+      setAnswer(localFallback(value));
+      setMode('guided');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -64,16 +85,19 @@ export function HomeHelpAssociate() {
 
             {submitted ? (
               <div className="mt-4 rounded-2xl border border-white/10 bg-black/25 p-4">
-                <p className="text-xs leading-5 text-white/70">{response.text}</p>
-                <Link href={response.href} className="mt-3 inline-flex text-xs font-black text-lime-200">{response.cta} →</Link>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-[9px] font-black uppercase tracking-[0.18em] text-white/30">{loading ? 'Thinking…' : mode === 'ai' ? 'AI response' : 'Guided response'}</span>
+                </div>
+                <p className="mt-2 text-xs leading-5 text-white/70">{loading ? 'Finding the best Skooby path for you…' : answer}</p>
+                {!loading ? <Link href={route.href} className="mt-3 inline-flex text-xs font-black text-lime-200">{route.cta} →</Link> : null}
               </div>
             ) : (
-              <p className="mt-4 text-xs leading-5 text-white/40">Guided help for finding the right Skooby tool. Ask about tracking, learning, accounts, wallets, or the giveaway.</p>
+              <p className="mt-4 text-xs leading-5 text-white/40">Ask about tracking, learning, accounts, wallets, or the GPU giveaway. When server AI is configured, answers are generated there; otherwise Skooby uses its built-in guided help.</p>
             )}
 
             <form onSubmit={submit} className="mt-4 flex gap-2">
               <input value={query} onChange={(event) => setQuery(event.target.value)} maxLength={180} placeholder="Ask Skooby…" className="min-w-0 flex-1 rounded-xl border border-white/10 bg-black/30 px-3 py-2.5 text-sm outline-none placeholder:text-white/25 focus:border-lime-300/40" />
-              <button className="rounded-xl bg-lime-300 px-4 py-2.5 text-xs font-black text-black hover:bg-lime-200">Ask</button>
+              <button disabled={loading} className="rounded-xl bg-lime-300 px-4 py-2.5 text-xs font-black text-black hover:bg-lime-200 disabled:cursor-wait disabled:opacity-60">Ask</button>
             </form>
           </div>
         </div>
