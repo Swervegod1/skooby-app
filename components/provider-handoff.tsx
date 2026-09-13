@@ -8,11 +8,7 @@ export default function ProviderHandoff() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!ready) return;
-    if (!authenticated) {
-      setError('Sign in with Skooby before opening the provider.');
-      return;
-    }
+    if (!ready || !authenticated) return;
 
     let cancelled = false;
     const launch = async () => {
@@ -37,12 +33,14 @@ export default function ProviderHandoff() {
     return () => { cancelled = true; };
   }, [ready, authenticated, getAccessToken]);
 
-  if (error) {
+  const displayError = ready && !authenticated ? 'Sign in with Skooby before opening the provider.' : error;
+
+  if (displayError) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#050b08] px-6 text-white">
         <div className="max-w-md text-center">
           <h1 className="text-xl font-semibold">Connection Error</h1>
-          <p className="mt-2 text-sm text-white/50">{error}</p>
+          <p className="mt-2 text-sm text-white/50">{displayError}</p>
           <button type="button" onClick={() => window.location.assign('/casino')} className="mt-5 rounded-lg bg-lime-300 px-5 py-2.5 font-semibold text-black">Return to Casino</button>
         </div>
       </main>
