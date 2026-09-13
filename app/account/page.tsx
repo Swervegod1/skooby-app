@@ -11,7 +11,13 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
-export default async function AccountPage() {
+type AccountPageProps = {
+  searchParams?: Promise<{ intent?: string }>;
+};
+
+export default async function AccountPage({ searchParams }: AccountPageProps) {
+  const params = searchParams ? await searchParams : {};
+  const wantsPro = params.intent === 'pro';
   const session = await getServerSession();
 
   if (!session) {
@@ -19,6 +25,13 @@ export default async function AccountPage() {
       <main className="min-h-screen bg-[#06100c] text-white">
         <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6"><Link href="/" className="text-xl font-black">SKOOBY<span className="text-lime-300">.APP</span></Link><Link href="/tracker" className="text-sm font-black text-white/55">Tracker</Link></nav>
         <section className="mx-auto max-w-6xl px-6 pb-24 pt-16">
+          {wantsPro ? (
+            <div className="mb-6 rounded-[1.75rem] border border-fuchsia-200/20 bg-fuchsia-200/[0.06] p-5 sm:p-6">
+              <p className="text-xs font-black uppercase tracking-[0.2em] text-fuchsia-200">Skooby Pro selected</p>
+              <h1 className="mt-2 text-2xl font-black">Sign in once, then continue straight to your Pro upgrade.</h1>
+              <p className="mt-2 text-sm leading-6 text-white/50">Use email or a supported wallet. Your Pro intent will stay attached to this account flow.</p>
+            </div>
+          ) : null}
           <AccountLogin />
         </section>
       </main>
@@ -37,6 +50,8 @@ export default async function AccountPage() {
   const walletAnalyses = usage.wallet_analysis ?? 0;
   const monthlyLimit = 250;
   const usagePercent = Math.min(100, Math.round((walletAnalyses / monthlyLimit) * 100));
+  const proCheckoutUrl = process.env.PRO_CHECKOUT_URL?.trim();
+  const validCheckoutUrl = proCheckoutUrl?.startsWith('https://') ? proCheckoutUrl : null;
 
   return (
     <main className="min-h-screen bg-[#06100c] text-white">
@@ -47,6 +62,26 @@ export default async function AccountPage() {
       </nav>
 
       <section className="relative mx-auto max-w-7xl px-6 pb-24 pt-10">
+        {wantsPro ? (
+          <section id="pro-plan" className="mb-8 overflow-hidden rounded-[2rem] border border-fuchsia-200/25 bg-[radial-gradient(circle_at_10%_0%,rgba(232,121,249,0.12),transparent_35%),rgba(232,121,249,0.04)] p-6 sm:p-8">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div className="max-w-3xl">
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-fuchsia-200">Skooby Pro</p>
+                <h2 className="mt-3 text-3xl font-black tracking-[-0.04em] sm:text-4xl">Upgrade without leaving your command center.</h2>
+                <p className="mt-3 leading-7 text-white/55">Pro is designed for deeper graph history, higher usage limits, exports, richer alerts, and premium research tools.</p>
+              </div>
+              {validCheckoutUrl ? (
+                <a href={validCheckoutUrl} className="shrink-0 rounded-full bg-fuchsia-200 px-7 py-4 text-center text-sm font-black text-black shadow-[0_0_35px_rgba(232,121,249,0.2)] transition hover:scale-[1.02] hover:bg-fuchsia-100">Continue to secure checkout</a>
+              ) : (
+                <div className="shrink-0 rounded-2xl border border-white/10 bg-black/20 px-5 py-4 text-sm text-white/45">
+                  <p className="font-black text-white/70">Pro checkout</p>
+                  <p className="mt-1 text-xs">Billing URL is not connected yet.</p>
+                </div>
+              )}
+            </div>
+          </section>
+        ) : null}
+
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div><p className="text-xs font-black uppercase tracking-[0.24em] text-lime-300">Personal command center</p><h1 className="mt-4 text-5xl font-black tracking-[-0.05em] sm:text-6xl">Your Skooby research, synced.</h1><p className="mt-4 max-w-2xl leading-7 text-white/55">Recent investigations, wallet alerts, and usage are rendered from your secure server session instead of waiting on a client-side auth promise.</p></div>
           <div className="rounded-2xl border border-lime-300/20 bg-lime-300/[0.06] px-5 py-4"><p className="text-[10px] font-black uppercase tracking-[0.2em] text-lime-200">Current plan</p><p className="mt-1 text-2xl font-black">Skooby Free</p></div>
@@ -77,7 +112,7 @@ export default async function AccountPage() {
           <div className="space-y-6">
             <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6"><p className="text-xs font-black uppercase tracking-[0.2em] text-lime-200">Wallet monitoring</p><h2 className="mt-2 text-2xl font-black">Active alerts</h2><div className="mt-4 space-y-3">{alerts.slice(0, 6).map((alert) => <div key={alert.id} className="rounded-2xl bg-black/20 p-4"><div className="flex justify-between gap-3"><span className="text-xs font-black uppercase text-white/35">{alert.chain}</span><span className="text-xs font-black text-lime-200">{alert.enabled ? 'Active' : 'Paused'}</span></div><p className="mt-2 break-all font-mono text-xs text-white/50">{alert.address}</p></div>)}{!alerts.length ? <p className="text-sm text-white/35">No saved wallet alerts yet.</p> : null}</div></section>
 
-            <section className="rounded-[2rem] border border-fuchsia-200/15 bg-fuchsia-200/[0.04] p-6"><p className="text-xs font-black uppercase tracking-[0.2em] text-fuchsia-200">Skooby Pro foundation</p><h2 className="mt-2 text-2xl font-black">Ready for paid capability gates.</h2><p className="mt-3 text-sm leading-6 text-white/50">The account model now has the surfaces needed for higher API limits, deeper graph history, exports, and premium research modules without changing the core tracker workflow.</p></section>
+            <section className="rounded-[2rem] border border-fuchsia-200/15 bg-fuchsia-200/[0.04] p-6"><p className="text-xs font-black uppercase tracking-[0.2em] text-fuchsia-200">Skooby Pro</p><h2 className="mt-2 text-2xl font-black">More room for deeper research.</h2><p className="mt-3 text-sm leading-6 text-white/50">Higher API limits, deeper graph history, exports, and premium research modules fit directly into this account model.</p><Link href="/account?intent=pro" className="mt-5 inline-flex rounded-full border border-fuchsia-200/20 bg-fuchsia-200/10 px-5 py-3 text-sm font-black text-fuchsia-50 hover:bg-fuchsia-200/15">View Pro upgrade →</Link></section>
           </div>
         </div>
       </section>
