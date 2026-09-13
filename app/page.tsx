@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ConnectWallet } from '@/components/connect-wallet';
+import { AccountEntryModal } from '@/components/account-entry-modal';
 import { HomeHelpAssociate } from '@/components/home-help-associate';
 
 const modules = [
@@ -42,7 +42,7 @@ export default function Home() {
             <Link href="/learn" className="hover:text-white">Learn</Link>
             <Link href="/account" className="hover:text-white">Account</Link>
           </div>
-          <ConnectWallet />
+          <AccountEntryModal />
         </div>
       </nav>
 
@@ -51,10 +51,12 @@ export default function Home() {
           <div className="mb-5 inline-flex rounded-full border border-lime-300/20 bg-lime-300/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-lime-200">Web3 intelligence without the detective board</div>
           <h1 className="max-w-4xl text-5xl font-black leading-[0.95] tracking-[-0.055em] sm:text-7xl lg:text-8xl">See the chain.<span className="block text-lime-300">Understand the trail.</span></h1>
           <p className="mt-7 max-w-2xl text-lg leading-8 text-white/65 sm:text-xl">Skooby turns crypto wallets, transactions, tokens, and on-chain activity into research tools that feel human instead of hexadecimal.</p>
-          <div className="mt-9 flex flex-wrap gap-3">
-            <Link href="/tracker" className="rounded-full bg-lime-300 px-6 py-3.5 text-sm font-black text-black transition hover:scale-[1.02] hover:bg-lime-200">Open Crypto Tracker</Link>
+          <div className="mt-9 flex flex-wrap items-center gap-3">
+            <AccountEntryModal />
+            <Link href="/tracker" className="rounded-full border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-bold text-white transition hover:bg-white/10">Explore tracker</Link>
             <Link href="/learn" className="rounded-full border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-bold text-white transition hover:bg-white/10">Learn interactively</Link>
           </div>
+          <p className="mt-3 text-xs font-semibold text-white/35">Start free with email or wallet. Upgrade to Pro from the same simple account flow.</p>
         </div>
 
         <div className="relative">
