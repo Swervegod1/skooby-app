@@ -83,7 +83,7 @@ export async function getMarketSnapshot(): Promise<MarketSnapshot> {
 
   try {
     const fresh = await fetchCoinGecko();
-    void saveRedisSnapshot(fresh);
+    await saveRedisSnapshot(fresh);
     return fresh;
   } catch (error) {
     if (cached) return { ...cached, stale: true };
