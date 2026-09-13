@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers';
+import { PRIVY_APP_ID, PRIVY_DEFAULT_JWKS_URL } from '@/lib/privy-config';
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
@@ -27,7 +28,10 @@ function decodeJson<T>(value: string): T {
 }
 
 function pemToBytes(pem: string) {
-  const body = pem.replace(/-----BEGIN PUBLIC KEY-----/g, '').replace(/-----END PUBLIC KEY-----/g, '').replace(/\s+/g, '');
+  const body = pem
+    .replace(/-----BEGIN PUBLIC KEY-----/g, '')
+    .replace(/-----END PUBLIC KEY-----/g, '')
+    .replace(/\s+/g, '');
   return Uint8Array.from(atob(body), (char) => char.charCodeAt(0));
 }
 
@@ -38,19 +42,91 @@ function safeEqual(a: string, b: string) {
   return diff === 0;
 }
 
-type PrivyClaims = { sub?: string; sid?: string; iss?: string; aud?: string | string[]; exp?: number; nbf?: number };
+type PrivyHeader = { alg?: string; kid?: string; typ?: string };
+type PrivyClaims = {
+  sub?: string;
+  sid?: string;
+  iss?: string;
+  aud?: string | string[];
+  iat?: number;
+  exp?: number;
+  nbf?: number;
+};
+type PrivyJwk = JsonWebKey & { kid?: string; alg?: string; use?: string };
+type JwksResponse = { keys?: PrivyJwk[] };
+
+async function fetchPrivyJwks(url: string, bypassCache = false) {
+  const response = await fetch(
+    url,
+    bypassCache
+      ? { cache: 'no-store', headers: { Accept: 'application/json' } }
+      : { next: { revalidate: 300 }, headers: { Accept: 'application/json' } },
+  );
+  if (!response.ok) throw new Error(`Privy JWKS request failed (${response.status}).`);
+  const payload = (await response.json()) as JwksResponse;
+  return payload.keys ?? [];
+}
+
+function selectPrivyJwk(keys: PrivyJwk[], header: PrivyHeader) {
+  const eligible = keys.filter(
+    (key) =>
+      key.kty === 'EC' &&
+      key.crv === 'P-256' &&
+      (!key.alg || key.alg === 'ES256') &&
+      (!key.use || key.use === 'sig'),
+  );
+
+  if (header.kid) return eligible.find((key) => key.kid === header.kid) ?? null;
+  return eligible.length === 1 ? eligible[0] : null;
+}
+
+async function importPrivyVerificationKey(header: PrivyHeader) {
+  const jwksUrl = process.env.PRIVY_JWKS_URL || PRIVY_DEFAULT_JWKS_URL;
+
+  try {
+    let keys = await fetchPrivyJwks(jwksUrl);
+    let jwk = selectPrivyJwk(keys, header);
+
+    if (!jwk) {
+      keys = await fetchPrivyJwks(jwksUrl, true);
+      jwk = selectPrivyJwk(keys, header);
+    }
+
+    if (jwk) {
+      return crypto.subtle.importKey(
+        'jwk',
+        jwk,
+        { name: 'ECDSA', namedCurve: 'P-256' },
+        false,
+        ['verify'],
+      );
+    }
+  } catch {
+    // Fall through to the optional static verification-key fallback below.
+  }
+
+  const verificationKey = process.env.PRIVY_JWT_VERIFICATION_KEY;
+  if (!verificationKey) {
+    throw new Error('Privy token verification is unavailable: JWKS could not be resolved.');
+  }
+
+  return crypto.subtle.importKey(
+    'spki',
+    toArrayBuffer(pemToBytes(verificationKey)),
+    { name: 'ECDSA', namedCurve: 'P-256' },
+    false,
+    ['verify'],
+  );
+}
 
 export async function verifyPrivyToken(token: string) {
-  const appId = process.env.NEXT_PUBLIC_PRIVY_APP_ID;
-  const verificationKey = process.env.PRIVY_JWT_VERIFICATION_KEY;
-  if (!appId || !verificationKey) throw new Error('Privy server verification is not configured.');
-
   const parts = token.split('.');
   if (parts.length !== 3) throw new Error('Invalid Privy access token.');
-  const header = decodeJson<{ alg?: string }>(parts[0]);
+
+  const header = decodeJson<PrivyHeader>(parts[0]);
   if (header.alg !== 'ES256') throw new Error('Unexpected Privy token algorithm.');
 
-  const key = await crypto.subtle.importKey('spki', toArrayBuffer(pemToBytes(verificationKey)), { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
+  const key = await importPrivyVerificationKey(header);
   const valid = await crypto.subtle.verify(
     { name: 'ECDSA', hash: 'SHA-256' },
     key,
@@ -62,9 +138,16 @@ export async function verifyPrivyToken(token: string) {
   const claims = decodeJson<PrivyClaims>(parts[1]);
   const now = Math.floor(Date.now() / 1000);
   const audiences = Array.isArray(claims.aud) ? claims.aud : claims.aud ? [claims.aud] : [];
-  if (claims.iss !== 'privy.io' || !audiences.includes(appId)) throw new Error('Invalid Privy token issuer or audience.');
-  if (!claims.exp || claims.exp <= now || (claims.nbf && claims.nbf > now + 30)) throw new Error('Expired Privy token.');
+
+  if (claims.iss !== 'privy.io' || !audiences.includes(PRIVY_APP_ID)) {
+    throw new Error('Invalid Privy token issuer or audience.');
+  }
+  if (!claims.exp || claims.exp <= now || (claims.nbf && claims.nbf > now + 30)) {
+    throw new Error('Expired or not-yet-valid Privy token.');
+  }
+  if (claims.iat && claims.iat > now + 60) throw new Error('Invalid Privy token issue time.');
   if (!claims.sub || !claims.sid) throw new Error('Privy session claims are incomplete.');
+
   return { userId: claims.sub, sessionId: claims.sid };
 }
 
@@ -73,8 +156,16 @@ type AppSession = { sub: string; sid: string; iat: number; exp: number };
 async function sign(input: string) {
   const secret = process.env.APP_SESSION_SECRET;
   if (!secret || secret.length < 32) throw new Error('APP_SESSION_SECRET must be at least 32 characters.');
-  const key = await crypto.subtle.importKey('raw', toArrayBuffer(encoder.encode(secret)), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-  return b64urlEncode(new Uint8Array(await crypto.subtle.sign('HMAC', key, toArrayBuffer(encoder.encode(input)))));
+  const key = await crypto.subtle.importKey(
+    'raw',
+    toArrayBuffer(encoder.encode(secret)),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign'],
+  );
+  return b64urlEncode(
+    new Uint8Array(await crypto.subtle.sign('HMAC', key, toArrayBuffer(encoder.encode(input)))),
+  );
 }
 
 export async function createAppSession(userId: string, sessionId: string) {
