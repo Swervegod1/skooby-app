@@ -26,12 +26,15 @@ export default async function AccountPage() {
     );
   }
 
-  let cloudAvailable = true;
-  const [casebook, alerts, usage] = await Promise.all([
-    listCasebook(session.userId).catch(() => { cloudAvailable = false; return []; }),
-    listAlerts(session.userId).catch(() => { cloudAvailable = false; return []; }),
-    getApiUsage(session.userId).catch(() => { cloudAvailable = false; return {}; }),
+  const [casebookResult, alertsResult, usageResult] = await Promise.allSettled([
+    listCasebook(session.userId),
+    listAlerts(session.userId),
+    getApiUsage(session.userId),
   ]);
+  const cloudAvailable = casebookResult.status === 'fulfilled' && alertsResult.status === 'fulfilled' && usageResult.status === 'fulfilled';
+  const casebook = casebookResult.status === 'fulfilled' ? casebookResult.value : [];
+  const alerts = alertsResult.status === 'fulfilled' ? alertsResult.value : [];
+  const usage = usageResult.status === 'fulfilled' ? usageResult.value : {};
   const walletAnalyses = usage.wallet_analysis ?? 0;
   const monthlyLimit = 250;
   const usagePercent = Math.min(100, Math.round((walletAnalyses / monthlyLimit) * 100));
