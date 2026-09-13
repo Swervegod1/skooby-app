@@ -2,7 +2,28 @@
 
 **Skooby.app** is a Web3-first crypto intelligence and wallet experience built to make on-chain activity easier to understand, explore, and use.
 
-> Repository status: initial application foundation.
+## Current product modules
+
+### Wallet Intelligence — `/wallet`
+- Privy authentication and embedded/linked wallet support
+- Wagmi + Viem connection on Base
+- Live connected address, chain ID, identity, and native balance
+- Guardrails that keep wallet secrets out of the repository
+
+### Crypto Market Tracker — `/market`
+- Server-side market data proxy
+- Major-asset USD prices
+- 24-hour percentage movement
+- Market capitalization
+- Automatic client refresh with graceful provider failure handling
+
+### Casino Integration Hub — `/casino`
+- Isolated game-provider architecture
+- Multi-game catalog UI
+- Independently written integration shell inspired by `0xdivi-code/web3-casino`
+- No real-money betting, deposits, withdrawals, payouts, or crypto wagering enabled
+
+See [`docs/CASINO_INTEGRATION.md`](docs/CASINO_INTEGRATION.md) for the integration boundary and licensing notes.
 
 ## Core stack
 
@@ -13,15 +34,7 @@
 - Wagmi + Viem for EVM wallet and chain interactions
 - TanStack Query for client-side async state
 - Base as the default EVM network foundation
-
-## Planned product areas
-
-- Crypto portfolio and wallet activity tracking
-- Human-readable transaction insights
-- Web2-friendly sign-in with embedded Web3 wallets
-- Token and wallet tools
-- Web3 integrations and interactive experiences
-- Additional Skooby utilities and product modules
+- GitHub Actions for lint, typecheck, and production-build verification
 
 ## Local setup
 
