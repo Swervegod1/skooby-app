@@ -9,6 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: '/account', priority: 0.8 },
     { path: '/wallet', priority: 0.85 },
     { path: '/market', priority: 0.6 },
+    { path: '/giveaway-rules', priority: 0.45 },
     ...guides.map((guide) => ({ path: `/learn/${guide.slug}`, priority: 0.75 })),
   ];
 
