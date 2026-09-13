@@ -36,17 +36,5 @@ function ConfiguredConnectButton() {
 }
 
 export function ConnectWallet() {
-  if (!process.env.NEXT_PUBLIC_PRIVY_APP_ID) {
-    return (
-      <button
-        className="rounded-full border border-white/15 px-5 py-3 text-sm text-white/50"
-        disabled
-        title="Add NEXT_PUBLIC_PRIVY_APP_ID to .env.local to enable authentication"
-      >
-        Wallet setup required
-      </button>
-    );
-  }
-
   return <ConfiguredConnectButton />;
 }
