@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 export default function CasinoPage() {
-  const providerUrl = process.env.CASINO_PUBLIC_LAUNCH_URL;
+  const providerUrl = process.env.NEXT_PUBLIC_CASINO_PROVIDER_URL;
   const providerName = process.env.CASINO_PROVIDER_NAME || 'External casino provider';
 
   return (
@@ -34,16 +34,14 @@ export default function CasinoPage() {
             <div>
               <p className="text-xs font-black uppercase tracking-[0.22em] text-lime-200">Provider handoff</p>
               <h2 className="mt-2 text-2xl font-black">Continue with {providerName}</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-white/50">Skooby does not process provider deposits, withdrawals, custody, payouts, or regulated gaming transactions. Those functions, if offered, stay entirely on the provider&apos;s own service and terms.</p>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-white/50">Use the dedicated handoff route to transfer from Skooby to the configured provider. The destination is controlled entirely through the public provider URL environment variable.</p>
             </div>
-            <a
-              href={providerUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/casino/provider"
               className="mt-5 inline-flex shrink-0 items-center justify-center rounded-full bg-lime-300 px-6 py-3 text-sm font-black text-black transition hover:bg-lime-200 sm:mt-0"
             >
               Open provider
-            </a>
+            </Link>
           </div>
         ) : null}
 
