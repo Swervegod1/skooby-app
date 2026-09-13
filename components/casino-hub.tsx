@@ -40,6 +40,7 @@ function ConfiguredCasinoHub() {
   const [leaders, setLeaders] = useState<Leader[]>([]);
 
   const selected = useMemo(() => games.find((game) => game.id === selectedId) ?? games[0], [selectedId]);
+  const displayedCredits = authenticated ? credits : null;
 
   async function authHeaders() {
     const token = await getAccessToken();
@@ -48,24 +49,27 @@ function ConfiguredCasinoHub() {
   }
 
   useEffect(() => {
-    if (!ready || !authenticated) {
-      setCredits(null);
-      return;
-    }
+    if (!ready || !authenticated) return;
+
     let active = true;
     const load = async () => {
       try {
-        const headers = await authHeaders();
-        const response = await fetch('/api/casino/credits', { headers, cache: 'no-store' });
+        const token = await getAccessToken();
+        if (!token) throw new Error('Authentication required.');
+        const response = await fetch('/api/casino/credits', {
+          headers: { Authorization: `Bearer ${token}` },
+          cache: 'no-store',
+        });
         const data = (await response.json()) as { credits?: number };
         if (active && response.ok && typeof data.credits === 'number') setCredits(data.credits);
       } catch {
         if (active) setCredits(null);
       }
     };
+
     void load();
     return () => { active = false; };
-  }, [ready, authenticated]);
+  }, [ready, authenticated, getAccessToken]);
 
   useEffect(() => {
     void fetch('/api/casino/leaderboard')
@@ -111,7 +115,7 @@ function ConfiguredCasinoHub() {
     <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#0a1511]/95 shadow-2xl shadow-black/30">
       <header className="flex flex-col gap-4 border-b border-white/10 bg-black/25 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
         <div><p className="text-sm font-black">SKOOBY CASINO</p><p className="mt-1 text-[11px] font-bold uppercase tracking-[0.18em] text-white/35">Server-authoritative play credits</p></div>
-        <div className="flex items-center gap-3"><div className="rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-xs font-black text-lime-100">{credits === null ? 'Credits locked' : `${credits.toFixed(2)} credits`}</div><ConnectWallet /></div>
+        <div className="flex items-center gap-3"><div className="rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-xs font-black text-lime-100">{displayedCredits === null ? 'Credits locked' : `${displayedCredits.toFixed(2)} credits`}</div><ConnectWallet /></div>
       </header>
 
       <div className="grid lg:grid-cols-[210px_1fr_320px]">
@@ -129,7 +133,7 @@ function ConfiguredCasinoHub() {
               {selected.id === 'roulette' || selected.id === 'baccarat' ? <label className="block"><span className="text-[10px] font-black uppercase tracking-[0.18em] text-white/35">Pick</span><select value={choice} onChange={(event) => setChoice(event.target.value)} className="mt-2 w-full rounded-2xl border border-white/10 bg-[#101d18] px-4 py-3 font-bold outline-none">{selected.id === 'roulette' ? <><option value="red">Red</option><option value="black">Black</option><option value="even">Even</option><option value="odd">Odd</option></> : <><option value="player">Player</option><option value="banker">Banker</option><option value="tie">Tie</option></>}</select></label> : null}
               {selected.id === 'crash' ? <label className="block"><span className="text-[10px] font-black uppercase tracking-[0.18em] text-white/35">Demo target</span><input type="number" min="1.01" max="10" step="0.1" value={crashTarget} onChange={(event) => setCrashTarget(Math.max(1.01, Number(event.target.value) || 2))} className="mt-2 w-full rounded-2xl border border-white/10 bg-white/[0.05] px-4 py-3 font-bold outline-none" /></label> : null}
             </div>
-            <button onClick={() => void playPrimary()} disabled={loading || !authenticated || credits === null} className="mt-5 w-full rounded-2xl bg-lime-300 px-5 py-4 text-sm font-black uppercase tracking-[0.12em] text-black disabled:opacity-40">{loading ? 'Validating…' : selected.cta}</button>
+            <button onClick={() => void playPrimary()} disabled={loading || !authenticated || displayedCredits === null} className="mt-5 w-full rounded-2xl bg-lime-300 px-5 py-4 text-sm font-black uppercase tracking-[0.12em] text-black disabled:opacity-40">{loading ? 'Validating…' : selected.cta}</button>
             {selected.id === 'blackjack' ? <div className="mt-3 grid grid-cols-2 gap-3"><button onClick={() => void callGame('hit')} className="rounded-2xl border border-white/10 p-3 font-black">Hit</button><button onClick={() => void callGame('stand')} className="rounded-2xl border border-white/10 p-3 font-black">Stand</button></div> : null}
           </div>
           <div className="mt-5 min-h-44 rounded-[2rem] border border-white/10 bg-[#08100d] p-5"><p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Validated result</p>{error ? <p className="mt-5 rounded-2xl border border-red-300/15 bg-red-300/[0.06] p-4 text-sm text-red-100">{error}</p> : result ? <pre className="mt-5 overflow-x-auto whitespace-pre-wrap text-sm leading-6 text-lime-100/80">{JSON.stringify(result.data, null, 2)}</pre> : <p className="mt-8 text-center text-sm text-white/30">Authenticate, choose a game, and run a play-credit round.</p>}</div>
