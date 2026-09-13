@@ -86,7 +86,8 @@ return tonumber(ARGV[1])
 }
 
 async function publicLabel(userId: string) {
-  const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(userId)));
+  const bytes = new TextEncoder().encode(userId);
+  const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', Uint8Array.from(bytes).buffer));
   const tag = Array.from(digest.slice(0, 4), (byte) => byte.toString(16).padStart(2, '0')).join('').toUpperCase();
   return `Player ${tag}`;
 }
