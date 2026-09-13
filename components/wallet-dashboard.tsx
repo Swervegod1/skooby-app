@@ -38,7 +38,7 @@ export function WalletDashboard() {
     { label: 'Wallet', value: shortAddress(address), detail: address },
     { label: 'Network', value: chainId === 8453 ? 'Base' : `Chain ${chainId}`, detail: 'Configured default: Base mainnet' },
     { label: 'Native balance', value: `${nativeBalance} ${balance.data?.symbol ?? 'ETH'}`, detail: balance.isFetching ? 'Refreshing…' : 'Live RPC read' },
-    { label: 'Privy identity', value: user?.email?.address ?? user?.google?.email ?? 'Authenticated', detail: user?.wallet?.address ? `Embedded/linked: ${shortAddress(user.wallet.address)}` : 'Wallet linked through Privy' },
+    { label: 'Privy identity', value: user?.email?.address ?? 'Authenticated', detail: user?.wallet?.address ? `Embedded/linked: ${shortAddress(user.wallet.address)}` : 'Wallet linked through Privy' },
   ];
 
   return (
