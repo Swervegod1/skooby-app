@@ -1,0 +1,26 @@
+name: Provider Health
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check Skooby provider health gate
+        shell: bash
+        run: |
+          SITE_URL="${{ vars.SKOOBY_PUBLIC_URL }}"
+          if [ -z "$SITE_URL" ]; then SITE_URL="https://skooby.app"; fi
+          STATUS=$(curl --silent --show-error --output response.json --write-out "%{http_code}" --max-time 10 "$SITE_URL/api/casino/provider-health")
+          cat response.json
+          if [ "$STATUS" != "200" ]; then
+            echo "Provider health gate returned HTTP $STATUS"
+            exit 1
+          fi
