@@ -56,8 +56,17 @@ export function AddressGraph({ nodes, edges }: { nodes: AddressGraphNode[]; edge
             if (!pos) return null;
             const active = node.id === selected?.id;
             const radius = node.kind === 'focus' ? 34 : active ? 25 : 20;
+            const select = () => setSelectedId(node.id);
             return (
-              <g key={node.id} onClick={() => setSelectedId(node.id)} className="cursor-pointer" role="button" tabIndex={0}>
+              <g
+                key={node.id}
+                onClick={select}
+                onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') select(); }}
+                className="cursor-pointer"
+                role="button"
+                tabIndex={0}
+                aria-label={`Select ${node.kind === 'focus' ? 'focus address' : 'connected wallet'} ${node.label}`}
+              >
                 <circle cx={pos.x} cy={pos.y} r={radius} fill={node.kind === 'focus' ? '#bef264' : active ? '#f5d0fe' : '#173b2d'} stroke={active ? '#ffffff' : 'rgba(255,255,255,.18)'} strokeWidth={active ? 3 : 1.5} />
                 <text x={pos.x} y={pos.y + 4} textAnchor="middle" fill={node.kind === 'focus' ? '#07110d' : '#ffffff'} fontSize="10" fontWeight="800">{node.kind === 'focus' ? 'FOCUS' : node.label.slice(0, 8)}</text>
               </g>
