@@ -1,0 +1,10 @@
+# Default ownership for Skooby.app
+* @Swervegod1
+
+# Security-sensitive surfaces
+/app/api/ @Swervegod1
+/lib/auth-session.ts @Swervegod1
+/lib/privy-config.ts @Swervegod1
+/lib/casino-security.ts @Swervegod1
+/components/provider-handoff.tsx @Swervegod1
+/.github/ @Swervegod1
