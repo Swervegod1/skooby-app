@@ -91,7 +91,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="relative border-t border-white/8 px-6 py-8 text-center text-sm text-white/40">Skooby.app · Web3 research tools that help you understand the trail.</footer>
+      <footer className="relative border-t border-white/8 px-6 py-8 text-center text-sm text-white/40">Skooby.app · Web3 research tools that help you understand the trail. <Link href="/tech4help" className="ml-3 text-lime-200 underline">Tech4Help community</Link></footer>
       <HomeHelpAssociate />
     </main>
   );
