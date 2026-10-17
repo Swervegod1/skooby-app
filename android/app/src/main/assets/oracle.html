@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5"><meta name="color-scheme" content="dark">
+<title>SKOOBY Alpha Oracle V1.2</title>
+<style>
+:root{color-scheme:dark;--bg:#06100c;--card:#111d16;--line:#294432;--accent:#a3e635;--text:#f5ffe8;--muted:#a6b5aa;--danger:#ff8c99}*{box-sizing:border-box}body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Roboto,sans-serif;margin:0;padding:16px 15px 50px}.hero{background:radial-gradient(circle at 80% 10%,#244d28 0,transparent 55%),#0c1b12;border:1px solid var(--line);border-radius:23px;padding:23px 20px;margin-bottom:15px}.eyebrow{letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-size:11px;font-weight:800}.hero h1{font-size:32px;letter-spacing:-.05em;line-height:1.05;margin:14px 0}.hero p,p{color:var(--muted);line-height:1.5;font-size:13px}.flag{font-size:13px;color:#ffe2aa;border:1px solid #947c36;padding:7px 11px;border-radius:90px;display:inline-block;background:#58431733;font-weight:bold}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.card{border:1px solid var(--line);background:var(--card);border-radius:18px;padding:17px;margin-bottom:12px}.metric{font-weight:800;font-size:25px;letter-spacing:-.03em}.label{font-size:11px;color:var(--muted);margin-bottom:5px}h2{font-size:17px;margin:0 0 13px}h3{font-size:12px;margin:0 0 10px;color:var(--accent);text-transform:uppercase;letter-spacing:.07em}form .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}label{display:flex;flex-direction:column;gap:6px;color:#cad9ca;font-size:12px}input,select{background:#09140f;border:1px solid #3b5e43;color:white;border-radius:11px;padding:11px;font-size:16px;width:100%;min-width:0}button{border:0;border-radius:12px;background:var(--accent);font-size:14px;font-weight:800;color:#132109;padding:13px 16px;width:100%;margin-top:14px}.result{font-family:ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.6;background:#050e08;border:1px solid var(--line);border-radius:12px;padding:12px;color:#d9f5cf}.row{display:flex;justify-content:space-between;gap:12px;margin:9px 0;font-size:13px;border-bottom:1px solid #26382a;padding-bottom:9px}.ok{color:var(--accent)}.bad{color:var(--danger)}small{color:var(--muted)}.footer{text-align:center;color:var(--muted);font-size:11px;padding:15px}#diagnostic{font-size:13px}
+</style></head>
+<body>
+<header class="hero"><div class="eyebrow">SKOOBY.APP · RESEARCH OS</div><h1>ALPHA<br>ORACLE <span style="color:var(--accent)">V1.2</span></h1><p>Mobile intelligence console. Deterministic risk gates; human authorization boundary; no autonomous execution.</p><span class="flag">NO TRADE · READ-ONLY</span></header>
+<div class="grid"><div class="card"><div class="label">DECISION</div><div class="metric" style="color:var(--accent)">HOLD</div><small>Fail-closed default</small></div><div class="card"><div class="label">EXECUTION</div><div class="metric" style="font-size:20px">DISABLED</div><small>No order permissions</small></div></div>
+<section class="card"><h2>Connected intelligence status</h2><p>No external credentials are packaged with this app. The LIVE TRACKER tab loads Skooby's existing website using an internet connection.</p><div class="row"><span>CoinGecko via web tracker</span><span>ONLINE CHECK</span></div><div class="row"><span>GMGN / smart money</span><span class="bad">NOT CONNECTED</span></div><div class="row"><span>X / social / news</span><span class="bad">NOT CONNECTED</span></div><div class="row"><span>Derivatives / CoinGlass</span><span class="bad">NOT CONNECTED</span></div><div class="row"><span>Wallet custody / Vultisig</span><span>DISABLED</span></div><div class="row"><span>Mahalanobis novelty model</span><span class="bad">NOT CALIBRATED</span></div></section>
+<section class="card"><h2>Risk harness simulator</h2><p>Enter example portfolio values. Outputs are a <strong>local simulation</strong>, not verified exchange data or approval to transact.</p>
+<form id="guard"><div class="fields">
+<label>Current equity ($)<input id="equity" type="number" step="any" min="0.01" value="9700" required></label>
+<label>Peak equity ($)<input id="peak" type="number" step="any" min="0.01" value="10000" required></label>
+<label>UTC day-start ($)<input id="day" type="number" step="any" min="0.01" value="10000" required></label>
+<label>Leverage (x)<input id="leverage" type="number" step="any" min="1" value="1" required></label>
+<label>ATR / price (%)<input id="atr" type="number" step="any" min="0" value="1.8" required></label>
+<label>Action<select id="action"><option value="OPEN">OPEN</option><option value="ADD">ADD TO POSITION</option></select></label>
+<label>Position direction<select id="side"><option value="LONG">LONG</option><option value="SHORT">SHORT</option></select></label>
+<label>Existing entry ($)<input id="entry" type="number" step="any" min="0" value="100"></label>
+<label>Current price ($)<input id="current" type="number" step="any" min="0" value="105"></label>
+</div><button type="submit">RUN RISK CHECK</button></form>
+<div id="diagnostic" aria-live="polite"></div></section>
+<section class="card"><h2>Oracle enforcement policy</h2><div class="row"><span>Daily drawdown ceiling</span><b>5%</b></div><div class="row"><span>Peak drawdown ceiling</span><b>10%</b></div><div class="row"><span>Maximum leverage</span><b>3x</b></div><div class="row"><span>ATR ratio above 3%</span><b>1x only</b></div><div class="row"><span>Adding to losers</span><b>BLOCKED</b></div><div class="row"><span>Missing verified data</span><b>HOLD</b></div><div class="row"><span>Autonomous execution</span><b>DISABLED</b></div></section>
+<div class="footer">Skooby Alpha Oracle V1.2 · Local simulator + secure live tracker · Not financial advice</div>
+<script>
+(function(){
+'use strict';
+function num(id){return Number(document.getElementById(id).value)}
+function evaluate(){
+ var equity=num('equity'),peak=num('peak'),day=num('day'),lev=num('leverage'),atr=num('atr');
+ var action=document.getElementById('action').value,side=document.getElementById('side').value;
+ var entry=num('entry'),price=num('current');
+ var reasons=[];
+ if(![equity,peak,day,lev,atr].every(Number.isFinite)||equity<=0||peak<=0||day<=0||equity>peak||lev<1||atr<0)reasons.push('INVALID_PORTFOLIO_INPUT');
+ var daily=(day-equity)/day*100,total=(peak-equity)/peak*100;
+ if(daily>=5)reasons.push('DAILY_DRAWDOWN_HALT');
+ if(total>=10)reasons.push('TOTAL_DRAWDOWN_HALT');
+ if(lev>3)reasons.push('LEVERAGE_OUT_OF_RANGE');
+ if(atr>3&&lev>1)reasons.push('HIGH_VOLATILITY_1X_ONLY');
+ if(action==='ADD'){
+  if(!(entry>0&&price>0&&Number.isFinite(entry)&&Number.isFinite(price)))reasons.push('INVALID_POSITION_PRICE');
+  else if((side==='LONG'&&price<=entry)||(side==='SHORT'&&price>=entry))reasons.push('AVERAGING_DOWN_BLOCKED');
+ }
+ return {version:'1.2',mode:'OFFLINE_SIMULATION',decision:'HOLD',executionEnabled:false,simulatedDailyDrawdownPct:Number(daily.toFixed(2)),simulatedPeakDrawdownPct:Number(total.toFixed(2)),riskGatePassed:reasons.length===0,reasons:reasons.concat(['LIVE_SOURCE_VERIFICATION_MISSING','NOVELTY_MODEL_NOT_CALIBRATED']),humanApprovalRequired:true};
+}
+function render(){var v=evaluate(), el=document.getElementById('diagnostic');el.innerHTML='<h3>SIMULATED EVALUATION · '+(v.riskGatePassed?'RISK CHECK PASS':'RISK CHECK BLOCKED')+'</h3><pre class="result"></pre>';el.querySelector('pre').textContent=JSON.stringify(v,null,2);}
+document.getElementById('guard').addEventListener('submit',function(event){event.preventDefault();render()});render();
+})();
+</script></body></html>

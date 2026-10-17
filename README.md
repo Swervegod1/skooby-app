@@ -1,84 +1,28 @@
-# Skooby.app
+# SKOOBY Alpha Oracle V1.2 · Android APK
 
-**Skooby.app** is a Web3-first crypto intelligence and wallet experience built to make on-chain activity easier to understand, explore, and use.
+Native Android Java/WebView shell with **bundled offline risk simulator** and **online Skooby market tracker** at https://skooby.app/tracker.
 
-## Current product modules
+- No exchange APIs, private keys, wallet signing, brokerage permissions, autonomous trading, or simulated realized gains.
+- The local simulator demonstrates drawdown, leverage, ATR-volatility, and anti-martingale checks; **it is not the full authenticated intelligence stack**.
+- Mahalanobis novelty assessment is marked NOT CALIBRATED until a validated train/calibration process is deployed.
+- The online tracker loads the existing Skooby site; its availability depends on the actual live site and the network.
 
-### Wallet Intelligence — `/wallet`
-- Privy authentication and embedded/linked wallet support
-- Wagmi + Viem connection on Base
-- Live connected address, chain ID, identity, and native balance
-- Guardrails that keep wallet secrets out of the repository
+## Build
 
-### Crypto Market Tracker — `/market`
-- Server-side market data proxy
-- Major-asset USD prices
-- 24-hour percentage movement
-- Market capitalization
-- Automatic client refresh with graceful provider failure handling
-
-### Casino Integration Hub — `/casino`
-- Isolated game-provider architecture
-- Multi-game catalog UI
-- Independently written integration shell inspired by `0xdivi-code/web3-casino`
-- No real-money betting, deposits, withdrawals, payouts, or crypto wagering enabled
-
-See [`docs/CASINO_INTEGRATION.md`](docs/CASINO_INTEGRATION.md) for the integration boundary and licensing notes.
-
-## Core stack
-
-- Next.js App Router
-- React + TypeScript
-- Tailwind CSS
-- Privy authentication and embedded wallets
-- Wagmi + Viem for EVM wallet and chain interactions
-- TanStack Query for client-side async state
-- Base as the default EVM network foundation
-- GitHub Actions for lint, typecheck, and production-build verification
-
-## Local setup
+JDK 17+, Android SDK platform 35, Android build-tools 35.0.0 and Gradle 8.13 required.
 
 ```bash
-git clone https://github.com/Swervegod1/skooby-app.git
-cd skooby-app
-npm install
-cp .env.example .env.local
-npm run dev
+cd android
+gradle assembleDebug
+# APK: app/build/outputs/apk/debug/app-debug.apk
 ```
 
-Then open `http://localhost:3000`.
+The included GitHub Actions workflow builds and uploads an installable, Android-debug-signed APK. Debug-signed APKs are for sideloading/testing, not production distribution. No Android SDK is installed in the assistant's local environment; GitHub Actions is needed for compilation and signing.
 
-## Environment variables
+## Installation
 
-Copy `.env.example` to `.env.local` and fill in your own values.
-
-```env
-NEXT_PUBLIC_PRIVY_APP_ID=
-NEXT_PUBLIC_BASE_RPC_URL=
-```
-
-Never commit private keys, API secrets, wallet seed phrases, Privy app secrets, or production credentials.
-
-## Scripts
-
-```bash
-npm run dev       # local development
-npm run build     # production build
-npm run start     # serve production build
-npm run lint      # lint the project
-npm run typecheck # TypeScript validation
-```
+Download the `SKOOBY-Alpha-Oracle-V1.2-debug-APK` artifact from the repository's completed GitHub Actions run, unzip it, install `app-debug.apk`, and open **SKOOBY Alpha Oracle**. Enable Android's per-source *Install unknown apps* permission only when you trust the downloaded APK. For production, add a secure release signing workflow and distribute through a controlled channel.
 
 ## Security
 
-Skooby.app handles Web3-facing functionality, so secrets and signing credentials must remain server-side or in the appropriate wallet/provider system. See `SECURITY.md` before adding integrations that move funds, sign transactions, or authenticate users.
-
-## Deployment
-
-The app is structured for deployment on Vercel or another platform that supports modern Next.js applications. Add environment variables through the deployment platform rather than committing them to Git.
-
-## Repository
-
-Maintained by [Swervegod1](https://github.com/Swervegod1).
-
-Website: https://skooby.app
+Local HTML is loaded from the app package. Navigation inside the app is restricted to `https://skooby.app` and the offline Oracle view; other HTTPS destinations open in the system browser. HTTP and non-HTTPS navigation is rejected. No JavaScript bridge to native signing functions is exposed. No sensitive keys or environment variables are bundled.
