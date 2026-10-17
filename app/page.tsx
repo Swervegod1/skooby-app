@@ -22,6 +22,12 @@ const modules = [
     eyebrow: 'CLOUD SYNC',
   },
   {
+    title: 'Alpha Oracle — Gematria Calendar',
+    description: 'Private, personalized symbolic calendar with transparent gematria math and numerology review windows. No trade execution.',
+    href: '/oracle/gematria',
+    eyebrow: 'RESEARCH TOOLS',
+  },
+  {
     title: 'Wallet Intelligence',
     description: 'Connect through Privy and inspect live Base wallet identity and native balance data.',
     href: '/wallet',

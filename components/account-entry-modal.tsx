@@ -15,9 +15,9 @@ export function AccountEntryModal() {
 
   useEffect(() => {
     if (!authenticated || !intent) return;
+    // Navigation unmounts this home-screen modal. Avoid synchronous effect-driven
+    // state updates (React Hooks lint rule: set-state-in-effect).
     router.push(intent === 'pro' ? '/account?intent=pro' : '/account');
-    setOpen(false);
-    setIntent(null);
   }, [authenticated, intent, router]);
 
   function choose(nextIntent: Exclude<Intent, null>) {
