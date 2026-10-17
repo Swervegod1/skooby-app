@@ -15,9 +15,8 @@ export function AccountEntryModal() {
 
   useEffect(() => {
     if (!authenticated || !intent) return;
+    // Navigation unmounts this modal; avoid synchronous state updates in effects.
     router.push(intent === 'pro' ? '/account?intent=pro' : '/account');
-    setOpen(false);
-    setIntent(null);
   }, [authenticated, intent, router]);
 
   function choose(nextIntent: Exclude<Intent, null>) {
