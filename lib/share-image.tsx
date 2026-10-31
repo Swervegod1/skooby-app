@@ -1,0 +1,11 @@
+import type { WalletAnalysis } from './wallet-analysis';
+import { shortAddress } from './wallet-analysis';
+export function ShareImage({ analysis }: { analysis?: WalletAnalysis }) {
+  return <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', background: '#101512', color: '#eef4e9', padding: '58px 70px', fontFamily: 'sans-serif' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><span style={{ fontSize: 40, fontWeight: 800, color: '#c5f773' }}>SKOOBY.</span><span style={{ fontSize: 19, color: '#a7b8a8', letterSpacing: 2 }}>{analysis ? 'PUBLIC-ADDRESS SNAPSHOT' : 'YOUR BLOCKCHAIN DETECTIVE'}</span></div>
+    <div style={{ display: 'flex', flexDirection: 'column', marginTop: 52 }}><span style={{ fontSize: analysis ? 59 : 76, fontWeight: 800, letterSpacing: -3 }}>{analysis ? analysis.unit + ' wallet case file' : 'Follow the blockchain trail.'}</span><span style={{ fontSize: 27, color: '#b3c2b3', marginTop: 18 }}>{analysis ? shortAddress(analysis.address) : 'Readable evidence. Transaction maps. Shareable case files.'}</span></div>
+    {analysis && <div style={{ display: 'flex', gap: 60, marginTop: 42 }}><div style={{ display: 'flex', flexDirection: 'column' }}><span style={{ fontSize: 16, color: '#a7b8a8' }}>BALANCE AT CAPTURE</span><span style={{ fontSize: analysis.balance.length > 22 ? 25 : 39, color: '#c5f773', marginTop: 10 }}>{analysis.balance + ' ' + analysis.unit}</span></div><div style={{ display: 'flex', flexDirection: 'column' }}><span style={{ fontSize: 16, color: '#a7b8a8' }}>TRANSACTIONS SAMPLED</span><span style={{ fontSize: 39, marginTop: 10 }}>{analysis.coverage.sampledTransactions + ' / ' + analysis.transactionCount}</span></div></div>}
+    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 'auto', paddingTop: 22, borderTop: '1px solid #3a4b3d', color: '#b3c2b3', fontSize: 18 }}><span>{analysis ? analysis.provider + ' · ' + analysis.capturedAt.slice(0, 10) + ' UTC' : 'BITCOIN + ETHEREUM · NO WALLET CONNECTION'}</span><span>skooby.app</span></div>
+    {analysis && <span style={{ fontSize: 14, color: '#8c9e8f', marginTop: 13 }}>Limited snapshot. Relationships do not establish identity or intent.</span>}
+  </div>;
+}

@@ -5,7 +5,9 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
+      disallow: ['/api/', '/account', '/shared-links'],
     },
     sitemap: 'https://skooby.app/sitemap.xml',
   };
 }
+

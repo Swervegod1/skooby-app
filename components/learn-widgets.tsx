@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { AddressGraph, type AddressGraphEdge, type AddressGraphNode } from '@/components/address-graph';
 
 type Analysis = {
-  balance: number;
+  balance: string;
   unit: 'BTC' | 'ETH';
   transactionCount: number;
   provider: string;
@@ -44,10 +44,14 @@ function BitcoinAddressWidget() {
 
   async function inspect() {
     setLoading(true);
-    const response = await fetch('/api/tracker/analyze', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chain: 'bitcoin', address }) });
-    const data = (await response.json()) as Analysis;
-    setAnalysis(data);
-    setLoading(false);
+    try {
+      const response = await fetch('/api/tracker/analyze', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chain: 'bitcoin', address }), signal: AbortSignal.timeout(25000) });
+      const data = (await response.json()) as Analysis;
+      if (!response.ok) throw new Error(data.error || 'Unable to inspect this address.');
+      setAnalysis(data);
+    } catch (error) {
+      setAnalysis({ balance: '0', unit: 'BTC', transactionCount: 0, provider: '', nodes: [], edges: [], error: error instanceof Error ? error.message : 'Unable to inspect this address.' });
+    } finally { setLoading(false); }
   }
 
   return (
@@ -61,11 +65,11 @@ function BitcoinAddressWidget() {
       {analysis && !analysis.error ? (
         <div className="mt-5 space-y-4">
           <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-2xl bg-black/20 p-4"><p className="text-[10px] uppercase text-white/35">Balance</p><p className="mt-2 font-black">{analysis.balance.toFixed(8)} {analysis.unit}</p></div>
+            <div className="rounded-2xl bg-black/20 p-4"><p className="text-[10px] uppercase text-white/35">Balance</p><p className="mt-2 break-all font-black">{analysis.balance} {analysis.unit}</p></div>
             <div className="rounded-2xl bg-black/20 p-4"><p className="text-[10px] uppercase text-white/35">Transactions</p><p className="mt-2 font-black">{analysis.transactionCount}</p></div>
             <div className="rounded-2xl bg-black/20 p-4"><p className="text-[10px] uppercase text-white/35">Provider</p><p className="mt-2 font-black">{analysis.provider}</p></div>
           </div>
-          <AddressGraph nodes={analysis.nodes} edges={analysis.edges} />
+          <AddressGraph nodes={analysis.nodes} edges={analysis.edges} chain="bitcoin" />
         </div>
       ) : null}
     </div>
@@ -107,3 +111,4 @@ export function LearnWidget({ type, ethUsd }: { type?: 'gas' | 'bitcoin-address'
   if (type === 'transaction-flow') return <TransactionFlowWidget />;
   return null;
 }
+

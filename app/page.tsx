@@ -1,98 +1,48 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
-import { AccountEntryModal } from '@/components/account-entry-modal';
-import { HomeHelpAssociate } from '@/components/home-help-associate';
+import { SiteHeader } from '@/components/site-header';
 
-const modules = [
-  {
-    title: 'Crypto Tracker',
-    description: 'Server-cached market data, wallet relationship graphs, cloud casebooks, and account-linked activity monitoring.',
-    href: '/tracker',
-    eyebrow: 'INTELLIGENCE',
-  },
-  {
-    title: 'Skooby Learn',
-    description: 'Interactive Bitcoin and Ethereum lessons with live calculators, public-address tools, and visual transaction flows.',
-    href: '/learn',
-    eyebrow: 'INTERACTIVE',
-  },
-  {
-    title: 'Account Command Center',
-    description: 'Open your synced investigations, alerts, usage meter, and personalized Skooby launchpad.',
-    href: '/account',
-    eyebrow: 'CLOUD SYNC',
-  },
-  {
-    title: 'Wallet Intelligence',
-    description: 'Connect through Privy and inspect live Base wallet identity and native balance data.',
-    href: '/wallet',
-    eyebrow: 'LIVE WEB3',
-  },
+export const metadata: Metadata = {
+  title: { absolute: 'Skooby — Follow the blockchain trail' },
+  description: 'Turn a public Bitcoin or Ethereum address into a readable case file: transaction maps, source-linked evidence and shareable cards. No wallet connection required.',
+  alternates: { canonical: '/' },
+};
+const questions = [
+  ['Do I need to connect my wallet?', 'No. Paste a public Bitcoin or Ethereum address. The case builder is read-only and never requests a signature or seed phrase.'],
+  ['What does a case report prove?', 'It shows activity returned by a data provider at the time of capture. It does not establish who owns an address, why a transaction happened, or whether an investment is safe.'],
+  ['Is this a complete transaction history?', 'No. Quick reports examine up to 14 recent transactions and show up to 6 on the map. Every report explains its sample and data source.'],
+  ['What happens when I share a case?', 'You explicitly choose to create an unlisted snapshot link. Anyone with the link can view it. Links expire after seven days; removal controls remain in the browser tab that created them.'],
 ];
-
 export default function Home() {
-  return (
-    <main className="min-h-screen overflow-hidden bg-[#07110d] text-white">
-      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(163,230,53,0.14),transparent_28%),radial-gradient(circle_at_80%_0%,rgba(34,197,94,0.09),transparent_30%)]" />
-
-      <nav className="relative mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-        <Link href="/" className="text-xl font-black tracking-tight">SKOOBY<span className="text-lime-300">.APP</span></Link>
-        <div className="flex items-center gap-4">
-          <div className="hidden gap-5 text-sm font-bold text-white/55 md:flex">
-            <Link href="/tracker" className="hover:text-white">Tracker</Link>
-            <Link href="/learn" className="hover:text-white">Learn</Link>
-            <Link href="/account" className="hover:text-white">Account</Link>
-          </div>
-          <AccountEntryModal />
-        </div>
-      </nav>
-
-      <section className="relative mx-auto grid max-w-6xl gap-14 px-6 pb-20 pt-20 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:pt-28">
-        <div>
-          <div className="mb-5 inline-flex rounded-full border border-lime-300/20 bg-lime-300/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-lime-200">Web3 intelligence without the detective board</div>
-          <h1 className="max-w-4xl text-5xl font-black leading-[0.95] tracking-[-0.055em] sm:text-7xl lg:text-8xl">See the chain.<span className="block text-lime-300">Understand the trail.</span></h1>
-          <p className="mt-7 max-w-2xl text-lg leading-8 text-white/65 sm:text-xl">Skooby turns crypto wallets, transactions, tokens, and on-chain activity into research tools that feel human instead of hexadecimal.</p>
-          <div className="mt-9 flex flex-wrap items-center gap-3">
-            <AccountEntryModal />
-            <Link href="/tracker" className="rounded-full border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-bold text-white transition hover:bg-white/10">Explore tracker</Link>
-            <Link href="/learn" className="rounded-full border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-bold text-white transition hover:bg-white/10">Learn interactively</Link>
-          </div>
-          <p className="mt-3 text-xs font-semibold text-white/35">Start free with email or wallet. Upgrade to Pro from the same simple account flow.</p>
-        </div>
-
-        <div className="relative">
-          <div className="absolute -inset-10 rounded-full bg-lime-300/10 blur-3xl" />
-          <div className="relative rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 shadow-2xl backdrop-blur-xl">
-            <div className="mb-5 flex items-center justify-between">
-              <div><p className="text-xs font-bold uppercase tracking-[0.2em] text-white/40">Skooby signal</p><p className="mt-1 text-lg font-bold">Research stack</p></div>
-              <span className="rounded-full bg-lime-300/10 px-3 py-1 text-xs font-bold text-lime-200">SERVER + WEB3</span>
-            </div>
-            <div className="space-y-3">
-              {['Server-cached market radar', 'Wallet relationship graphs', 'Cloud casebooks + alerts', 'Interactive crypto education'].map((item, index) => (
-                <div key={item} className="flex items-center gap-4 rounded-2xl border border-white/8 bg-black/20 p-4">
-                  <div className="grid size-10 shrink-0 place-items-center rounded-full bg-lime-300 text-sm font-black text-black">{index + 1}</div>
-                  <div className="min-w-0 flex-1"><p className="font-semibold">{item}</p><div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/8"><div className="h-full w-[88%] rounded-full bg-lime-300" /></div></div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="relative mx-auto max-w-6xl px-6 pb-24 pt-6">
-        <div className="grid gap-4 md:grid-cols-2">
-          {modules.map((module) => (
-            <Link key={module.title} href={module.href} className="group rounded-3xl border border-white/10 bg-white/[0.035] p-6 transition hover:-translate-y-1 hover:bg-white/[0.06]">
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-lime-300/70">{module.eyebrow}</p>
-              <h2 className="mt-5 text-xl font-black tracking-tight">{module.title}</h2>
-              <p className="mt-3 leading-7 text-white/55">{module.description}</p>
-              <p className="mt-6 text-sm font-black text-lime-200">Open module →</p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <footer className="relative border-t border-white/8 px-6 py-8 text-center text-sm text-white/40">Skooby.app · Web3 research tools that help you understand the trail.</footer>
-      <HomeHelpAssociate />
-    </main>
-  );
+  const structured = { '@context': 'https://schema.org', '@type': 'WebApplication', name: 'Skooby', url: 'https://skooby.app', applicationCategory: 'FinanceApplication', operatingSystem: 'Web', description: 'Read-only Bitcoin and Ethereum public-address research with source-linked case reports.' };
+  return <main className="case-shell">
+    <SiteHeader />
+    <section className="case-hero case-container">
+      <div className="case-hero-copy"><p className="case-eyebrow"><span className="case-live-dot" /> YOUR BLOCKCHAIN DETECTIVE</p><h1>A wallet address.<br />A trail worth<br /><em>understanding.</em></h1><p className="case-lede">Turn public blockchain activity into a case you can actually read. Follow transactions, inspect the evidence, and share what you found.</p><div className="case-actions"><Link href="/tracker" className="case-button case-button-primary">Open your first case →</Link><Link href="/tracker?demo=1" className="case-button">Explore the demo ↗</Link></div><p className="case-hero-note">BITCOIN + ETHEREUM <span>·</span> NO WALLET CONNECTION</p></div>
+      <div className="case-hero-art" aria-label="Illustrated sample of a fictional wallet case">
+        <div className="case-demo-top"><span>CASE FILE / 001</span><span className="case-tag">FICTIONAL DEMO</span></div>
+        <div className="case-demo-title">The trail is in the transactions.<span>Start connecting the dots.</span></div>
+        <svg viewBox="0 0 440 280" role="img" aria-label="Fictional transaction diagram: two inputs enter a transaction and branch to a focus wallet and change">
+          <defs><pattern id="case-grid" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#304334" /></pattern></defs><rect width="440" height="280" fill="url(#case-grid)" />
+          <path d="M80 65 L210 140 L355 95 M80 215 L210 140 L355 215" fill="none" stroke="#89af62" strokeWidth="2" />
+          <circle cx="80" cy="65" r="25" fill="#213326" stroke="#789671" /><circle cx="80" cy="215" r="25" fill="#213326" stroke="#789671" />
+          <rect x="182" y="112" width="56" height="56" rx="14" fill="#d7efb7" /><circle cx="355" cy="95" r="34" fill="#c5f773" /><circle cx="355" cy="215" r="25" fill="#213326" stroke="#789671" />
+          <g fontFamily="monospace" fontSize="11" textAnchor="middle" fill="#d8e6d4"><text x="80" y="70">IN A</text><text x="80" y="220">IN B</text><text x="210" y="145" fill="#101512">TX</text><text x="355" y="100" fill="#101512">FOCUS</text><text x="355" y="220">CHANGE</text></g>
+        </svg>
+        <div className="case-demo-receipt"><span className="case-eyebrow">THE IMPORTANT DETAIL</span><p>Two inputs. One transaction.<br />No invented ownership story.</p><Link href="/tracker?demo=1">Inspect the sample evidence →</Link></div>
+        <div className="case-demo-bottom"><span>OBSERVE. VERIFY. UNDERSTAND.</span><span>SKOOBY.</span></div>
+      </div>
+    </section>
+    <section className="case-how case-container" aria-labelledby="case-how-title"><div className="case-section-intro"><p className="case-eyebrow">LESS NOISE. MORE CONTEXT.</p><h2 id="case-how-title">From an address<br />to an understandable case.</h2></div><div className="case-steps">{[
+      ['01', 'Open a case', 'Paste a public address. No sign-in, wallet signature or complicated dashboard.'],
+      ['02', 'Follow the evidence', 'See transactions, readable summaries and receipts linked to the original explorer.'],
+      ['03', 'Share the picture', 'Download a case card or deliberately create an expiring report link.'],
+    ].map(([number, title, text]) => <article key={number}><span className="case-step-number">{number}</span><h3>{title}</h3><p>{text}</p></article>)}</div></section>
+    <section className="case-principle case-container"><p className="case-eyebrow">BUILT FOR CURIOSITY. GROUNDED IN EVIDENCE.</p><h2>Connections are visible.<br /><span>Ownership isn’t assumed.</span></h2><p>Every case names its source, capture time and coverage. Bitcoin inputs stay connected to their transaction, so a shared input never becomes an unsupported accusation.</p><Link href="/learn" className="case-inline-link">Learn how to read the chain →</Link></section>
+    <section className="case-faq case-container" aria-labelledby="case-faq-title"><div><p className="case-eyebrow">BEFORE YOU FOLLOW THE TRAIL</p><h2 id="case-faq-title">A few good questions.</h2></div><div>{questions.map(([question, answer]) => <details key={question}><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</div></section>
+    <section className="case-final-cta case-container"><h2>Find the story in the data.</h2><Link href="/tracker" className="case-button case-button-primary">Start an investigation →</Link></section>
+    <footer className="case-footer case-container"><Link href="/" className="case-brand">SKOOBY.</Link><p>Public data. Clear context. Your curiosity.</p><div><Link href="/privacy">Privacy</Link><Link href="/shared-links">Shared links</Link><a href="https://github.com/Swervegod1/skooby-app" target="_blank" rel="noopener noreferrer">GitHub ↗</a></div></footer>
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structured).replace(/</g, '\\u003c') }} />
+  </main>;
 }
+

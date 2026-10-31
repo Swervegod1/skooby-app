@@ -67,7 +67,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "tsc -p tsconfig.test.json && node --test .test-dist/tests/*.test.js",
+    "growth": "node scripts/growth-report.mjs",
+    "test:smoke": "node scripts/smoke.mjs"
   },
   "engines": {
     "node": ">=20.9.0"
