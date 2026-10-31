@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { usePrivy } from '@privy-io/react-auth';
 
 export default function ProviderHandoff() {
@@ -66,13 +67,12 @@ export default function ProviderHandoff() {
         <div className="max-w-md text-center">
           <h1 className="text-xl font-semibold">Connection Error</h1>
           <p className="mt-2 text-sm text-white/50">{displayError}</p>
-          <button
-            type="button"
-            onClick={() => window.location.assign('/casino')}
+          <Link
+            href="/casino"
             className="mt-5 rounded-lg bg-lime-300 px-5 py-2.5 font-semibold text-black transition hover:bg-lime-200"
           >
             Return to Casino
-          </button>
+          </Link>
         </div>
       </main>
     );
@@ -95,3 +95,4 @@ export default function ProviderHandoff() {
     </main>
   );
 }
+

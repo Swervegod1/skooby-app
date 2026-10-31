@@ -1,16 +1,16 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import './globals.css';
-import { Providers } from '@/components/providers';
+import './case.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://skooby.app'),
   title: {
-    default: 'Skooby.app — Follow the Money',
+    default: 'Skooby — Follow the blockchain trail',
     template: '%s | Skooby.app',
   },
   description:
-    'Skooby.app makes crypto wallets, transactions, tokens, and on-chain activity easier to understand.',
+    'Turn a public Bitcoin or Ethereum address into a readable case file with transaction maps, source-linked evidence and shareable cards.',
   keywords: [
     'crypto tracker',
     'wallet tracker',
@@ -21,16 +21,17 @@ export const metadata: Metadata = {
     'on-chain analytics',
   ],
   openGraph: {
-    title: 'Skooby.app — Follow the Money',
-    description: 'Understand wallets, transactions, tokens, and on-chain activity without the noise.',
+    title: 'Skooby — Follow the blockchain trail',
+    description: 'Readable evidence. Transaction maps. Shareable case files.',
     url: 'https://skooby.app',
     siteName: 'Skooby.app',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Skooby.app — Follow the Money',
-    description: 'Understand wallets, transactions, tokens, and on-chain activity without the noise.',
+    title: 'Skooby — Follow the blockchain trail',
+    description: 'Readable evidence. Transaction maps. Shareable case files.',
+    images: ['/opengraph-image'],
   },
 };
 
@@ -38,8 +39,9 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html lang="en">
       <body>
-        <Providers>{children}</Providers>
+        {children}
       </body>
     </html>
   );
 }
+

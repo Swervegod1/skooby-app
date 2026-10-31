@@ -16,8 +16,6 @@ export function AccountEntryModal() {
   useEffect(() => {
     if (!authenticated || !intent) return;
     router.push(intent === 'pro' ? '/account?intent=pro' : '/account');
-    setOpen(false);
-    setIntent(null);
   }, [authenticated, intent, router]);
 
   function choose(nextIntent: Exclude<Intent, null>) {
@@ -35,13 +33,13 @@ export function AccountEntryModal() {
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => { setIntent(null); if (authenticated) router.push('/account'); else setOpen(true); }}
         className="rounded-full bg-lime-300 px-5 py-3 text-sm font-black text-black shadow-[0_0_30px_rgba(190,242,100,0.18)] transition hover:scale-[1.03] hover:bg-lime-200"
       >
         {authenticated ? 'Open account' : 'Start free'}
       </button>
 
-      {open ? (
+      {open && !authenticated ? (
         <div className="fixed inset-0 z-[80] grid place-items-center bg-black/75 px-4 py-8 backdrop-blur-md" role="dialog" aria-modal="true" aria-label="Choose your Skooby account">
           <button type="button" className="absolute inset-0 cursor-default" aria-label="Close account dialog" onClick={() => setOpen(false)} />
           <div className="relative z-10 w-full max-w-3xl overflow-hidden rounded-[2rem] border border-lime-300/20 bg-[#08130f] shadow-2xl">
@@ -50,7 +48,7 @@ export function AccountEntryModal() {
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.24em] text-lime-300">Join Skooby</p>
                   <h2 className="mt-2 text-3xl font-black tracking-[-0.04em] sm:text-4xl">One account. Your whole research trail.</h2>
-                  <p className="mt-3 max-w-2xl text-sm leading-6 text-white/55">Sign in with email or a supported wallet. Your casebooks, alerts, wallet investigations, and usage can follow you across devices.</p>
+                  <p className="mt-3 max-w-2xl text-sm leading-6 text-white/55">Sign in with email or a supported wallet. Your casebooks, saved addresses, wallet investigations, and usage can follow you across devices.</p>
                 </div>
                 <button type="button" onClick={() => setOpen(false)} aria-label="Close" className="grid size-10 shrink-0 place-items-center rounded-full border border-white/10 bg-white/5 text-xl text-white/60 hover:bg-white/10">×</button>
               </div>
@@ -97,3 +95,4 @@ export function AccountEntryModal() {
     </>
   );
 }
+

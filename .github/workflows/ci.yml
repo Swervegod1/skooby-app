@@ -32,5 +32,12 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Test transaction accuracy and sharing
+        run: npm test
+
       - name: Build
         run: npm run build
+
+
+      - name: Smoke test production routes
+        run: npm run test:smoke

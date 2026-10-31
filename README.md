@@ -1,6 +1,21 @@
 # Skooby.app
 
-**Skooby.app** is a Web3-first crypto intelligence and wallet experience built to make on-chain activity easier to understand, explore, and use.
+**Skooby.app** turns a public Bitcoin or Ethereum address into a readable case file: transaction maps, source-linked evidence, and a card you can share. No wallet connection is required for research.
+
+Start at [`/tracker?demo=1`](https://skooby.app/tracker?demo=1) for a clearly labeled fictional example, or enter a public address at [`/tracker`](https://skooby.app/tracker).
+
+## Wallet case files
+
+- Bitcoin address → transaction → address graphs preserve multi-input ambiguity.
+- Exact satoshi/wei arithmetic, provider timestamps, bounded samples, and explicit limitations.
+- Local 1080 × 1350 PNG case cards; no image upload needed.
+- Explicit-consent report links expire after seven days and can be revoked from the creating browser tab.
+- Shared pages include social preview images, source receipts, and an invitation to investigate another address.
+- Daily aggregate growth counters without addresses or user identifiers.
+
+Shared links require Redis. The demo and card export work without Redis or authentication. Live analysis requires access to mempool.space or BlockCypher. Account features require Privy and the session secret. Automatic watchlist notifications are **not implemented**.
+
+See [release configuration and limits](docs/CASE_REPORTS_RELEASE.md) and the [launch experiment](docs/GROWTH_EXPERIMENT.md).
 
 ## Current product modules
 
@@ -67,6 +82,8 @@ npm run build     # production build
 npm run start     # serve production build
 npm run lint      # lint the project
 npm run typecheck # TypeScript validation
+npm test          # transaction accuracy, provider failure, and sharing checks
+npm run growth    # read today's aggregate counters (server Redis env required)
 ```
 
 ## Security
@@ -82,3 +99,4 @@ The app is structured for deployment on Vercel or another platform that supports
 Maintained by [Swervegod1](https://github.com/Swervegod1).
 
 Website: https://skooby.app
+

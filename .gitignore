@@ -5,6 +5,7 @@
 
 # testing
 /coverage
+/.test-dist/
 
 # next.js
 /.next/
@@ -34,3 +35,4 @@ pnpm-debug.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+

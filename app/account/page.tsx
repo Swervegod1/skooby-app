@@ -6,7 +6,7 @@ import { getApiUsage, listAlerts, listCasebook } from '@/lib/cloud-store';
 
 export const metadata: Metadata = {
   title: 'Account Command Center | Skooby',
-  description: 'Manage your Skooby research history, wallet alerts, API usage, and subscription access.',
+  description: 'Manage your Skooby research history, saved watchlist, API usage, and subscription access.',
 };
 
 export const dynamic = 'force-dynamic';
@@ -48,8 +48,6 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
   const alerts = alertsResult.status === 'fulfilled' ? alertsResult.value : [];
   const usage = usageResult.status === 'fulfilled' ? usageResult.value : {};
   const walletAnalyses = usage.wallet_analysis ?? 0;
-  const monthlyLimit = 250;
-  const usagePercent = Math.min(100, Math.round((walletAnalyses / monthlyLimit) * 100));
   const proCheckoutUrl = process.env.PRO_CHECKOUT_URL?.trim();
   const validCheckoutUrl = proCheckoutUrl?.startsWith('https://') ? proCheckoutUrl : null;
 
@@ -83,21 +81,20 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
         ) : null}
 
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div><p className="text-xs font-black uppercase tracking-[0.24em] text-lime-300">Personal command center</p><h1 className="mt-4 text-5xl font-black tracking-[-0.05em] sm:text-6xl">Your Skooby research, synced.</h1><p className="mt-4 max-w-2xl leading-7 text-white/55">Recent investigations, wallet alerts, and usage are rendered from your secure server session instead of waiting on a client-side auth promise.</p></div>
+          <div><p className="text-xs font-black uppercase tracking-[0.24em] text-lime-300">Personal command center</p><h1 className="mt-4 text-5xl font-black tracking-[-0.05em] sm:text-6xl">Your Skooby research, synced.</h1><p className="mt-4 max-w-2xl leading-7 text-white/55">Revisit saved public addresses and see your research history across devices.</p></div>
           <div className="rounded-2xl border border-lime-300/20 bg-lime-300/[0.06] px-5 py-4"><p className="text-[10px] font-black uppercase tracking-[0.2em] text-lime-200">Current plan</p><p className="mt-1 text-2xl font-black">Skooby Free</p></div>
         </div>
 
-        {!cloudAvailable ? <div className="mt-6 rounded-2xl border border-amber-300/20 bg-amber-300/[0.05] p-4 text-sm text-amber-100">Cloud sync is not configured yet. Add the Redis environment variables to activate cross-device casebooks, alerts, and usage history.</div> : null}
+        {!cloudAvailable ? <div className="mt-6 rounded-2xl border border-amber-300/20 bg-amber-300/[0.05] p-4 text-sm text-amber-100">Your saved research is temporarily unavailable. Please try again shortly.</div> : null}
 
         <div className="mt-8 grid gap-5 lg:grid-cols-3">
           <article className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6">
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/35">Monthly wallet analyses</p>
-            <p className="mt-3 text-4xl font-black">{walletAnalyses}<span className="text-lg text-white/35"> / {monthlyLimit}</span></p>
-            <div className="mt-5 h-2 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-lime-300" style={{ width: `${usagePercent}%` }} /></div>
-            <p className="mt-3 text-xs text-white/40">Free-tier usage meter. Higher limits can map directly to a future Pro/API subscription.</p>
+            <p className="mt-3 text-4xl font-black">{walletAnalyses}</p>
+            <p className="mt-3 text-xs text-white/40">Successful analyses made while signed in this month.</p>
           </article>
           <article className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6"><p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/35">Saved cases</p><p className="mt-3 text-4xl font-black">{casebook.length}</p><p className="mt-3 text-sm text-white/45">Cross-device investigations tied to your account.</p></article>
-          <article className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6"><p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/35">Active alerts</p><p className="mt-3 text-4xl font-black">{alerts.filter((alert) => alert.enabled).length}</p><p className="mt-3 text-sm text-white/45">Saved public-wallet activity monitors.</p></article>
+          <article className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6"><p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/35">Saved watchlist</p><p className="mt-3 text-4xl font-black">{alerts.filter((alert) => alert.enabled).length}</p><p className="mt-3 text-sm text-white/45">Saved addresses. Automatic notifications are not enabled.</p></article>
         </div>
 
         <div className="mt-8 grid gap-6 xl:grid-cols-[1.1fr_.9fr]">
@@ -110,7 +107,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
           </section>
 
           <div className="space-y-6">
-            <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6"><p className="text-xs font-black uppercase tracking-[0.2em] text-lime-200">Wallet monitoring</p><h2 className="mt-2 text-2xl font-black">Active alerts</h2><div className="mt-4 space-y-3">{alerts.slice(0, 6).map((alert) => <div key={alert.id} className="rounded-2xl bg-black/20 p-4"><div className="flex justify-between gap-3"><span className="text-xs font-black uppercase text-white/35">{alert.chain}</span><span className="text-xs font-black text-lime-200">{alert.enabled ? 'Active' : 'Paused'}</span></div><p className="mt-2 break-all font-mono text-xs text-white/50">{alert.address}</p></div>)}{!alerts.length ? <p className="text-sm text-white/35">No saved wallet alerts yet.</p> : null}</div></section>
+            <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6"><p className="text-xs font-black uppercase tracking-[0.2em] text-lime-200">Wallet watchlist</p><h2 className="mt-2 text-2xl font-black">Saved watchlist</h2><div className="mt-4 space-y-3">{alerts.slice(0, 6).map((alert) => <div key={alert.id} className="rounded-2xl bg-black/20 p-4"><div className="flex justify-between gap-3"><span className="text-xs font-black uppercase text-white/35">{alert.chain}</span><span className="text-xs font-black text-lime-200">{alert.enabled ? 'Saved' : 'Paused'}</span></div><p className="mt-2 break-all font-mono text-xs text-white/50">{alert.address}</p></div>)}{!alerts.length ? <p className="text-sm text-white/35">No saved saved watchlist yet.</p> : null}</div></section>
 
             <section className="rounded-[2rem] border border-fuchsia-200/15 bg-fuchsia-200/[0.04] p-6"><p className="text-xs font-black uppercase tracking-[0.2em] text-fuchsia-200">Skooby Pro</p><h2 className="mt-2 text-2xl font-black">More room for deeper research.</h2><p className="mt-3 text-sm leading-6 text-white/50">Higher API limits, deeper graph history, exports, and premium research modules fit directly into this account model.</p><Link href="/account?intent=pro" className="mt-5 inline-flex rounded-full border border-fuchsia-200/20 bg-fuchsia-200/10 px-5 py-3 text-sm font-black text-fuchsia-50 hover:bg-fuchsia-200/15">View Pro upgrade →</Link></section>
           </div>
@@ -119,3 +116,4 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
     </main>
   );
 }
+

@@ -23,13 +23,18 @@ function config() {
   return { url, token };
 }
 
-async function redis<T>(command: Array<string | number>) {
+export function cloudConfigured() {
+  return Boolean(process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN);
+}
+
+export async function redis<T>(command: Array<string | number>) {
   const { url, token } = config();
   const response = await fetch(url, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(command),
     cache: 'no-store',
+    signal: AbortSignal.timeout(5000),
   });
   if (!response.ok) throw new Error(`Cloud store request failed (${response.status}).`);
   const payload = (await response.json()) as { result?: T; error?: string };
@@ -86,3 +91,4 @@ export async function getApiUsage(userId: string) {
   for (let index = 0; index < (values ?? []).length; index += 2) result[values[index]] = Number(values[index + 1]);
   return result;
 }
+
