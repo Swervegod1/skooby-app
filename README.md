@@ -100,3 +100,11 @@ Maintained by [Swervegod1](https://github.com/Swervegod1).
 
 Website: https://skooby.app
 
+## ORACLE X research workspace
+
+The `/oracle` route connects to the independent [ORACLE X service](services/oracle-x/README.md).
+It provides documented Coinbase market-data research, costed backtests and isolated
+paper accounting. No strategy is approved for trading and no live execution
+adapter exists. Setup, measured results, security policy and acceptance commands
+are documented in the service directory.
+

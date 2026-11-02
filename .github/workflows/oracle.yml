@@ -1,0 +1,38 @@
+name: ORACLE research and safety
+on:
+  pull_request:
+    paths: ['services/oracle-x/**', 'app/oracle/**', 'lib/oracle-types.ts', '.github/workflows/oracle.yml']
+  push:
+    branches: [main]
+    paths: ['services/oracle-x/**', 'app/oracle/**', 'lib/oracle-types.ts', '.github/workflows/oracle.yml']
+permissions:
+  contents: read
+jobs:
+  paper-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.lock
+        working-directory: services/oracle-x
+      - run: python -m pytest -q
+        working-directory: services/oracle-x
+      - run: python -m oracle.research --capture data/coinbase-capture.json --output /tmp/research-a.json
+        working-directory: services/oracle-x
+      - run: python -m oracle.research --capture data/coinbase-capture.json --output /tmp/research-b.json && cmp /tmp/research-a.json /tmp/research-b.json
+        working-directory: services/oracle-x
+  frontend-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npx tsc --module commonjs --target es2022 --esModuleInterop --skipLibCheck --outDir /tmp/oracle-contract-tests lib/oracle-types.ts app/oracle/contract.test.ts
+      - run: node --test /tmp/oracle-contract-tests/app/oracle/contract.test.js
