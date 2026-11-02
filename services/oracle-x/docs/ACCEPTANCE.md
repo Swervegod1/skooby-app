@@ -22,7 +22,7 @@ readiness, strategy profitability, hosted deployment or real execution.
 | Route smoke | Start built Next server, request `/oracle`, `/api/oracle/status` anonymously, and POST `/api/oracle/live/order` | PASS — 200 / 401 / 404 |
 | Rendered browser / mobile review | Playwright Chromium | NOT RUN — browser download returned an invalid/truncated archive; no visual QA claim |
 | Container deployment | `docker compose build && docker compose up -d` from service directory | NOT RUN — Docker unavailable in workspace |
-| Hosted CI / deployment | GitHub Actions and target host | NOT YET VERIFIED — configuration supplied, no hosting provisioned |
+| Hosted CI / deployment | GitHub Actions and target host | BLOCKED — jobs did not start; GitHub reports the account is locked due to a billing issue. No hosting provisioned |
 | Live trading / paid services | None | NOT RUN — no authorization or implementation; no funds moved |
 
 Python suite emitted one Starlette/httpx test-client deprecation warning; there
@@ -37,3 +37,10 @@ No forward paper entry is eligible from the current four research models. The
 historical backtest fills in the JSON report belong to simulations, not Coinbase
 account transactions. Results exclude infrastructure cost and taxes; see the
 validation report for assumptions and deferred measurements.
+
+Hosted run evidence: `CI` run 41372338670 and `ORACLE research and safety` run
+41372338688 failed before any job steps. The GitHub annotation for job
+125045267641 states: “The job was not started because your account is locked due
+to a billing issue.” This is not a failing application test. No billing settings
+were changed and no spending was authorized. The PR remains a draft; resolve the
+account issue through official GitHub account controls, then rerun CI before merge.
