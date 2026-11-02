@@ -1,0 +1,28 @@
+services:
+  oracle:
+    build: .
+    restart: unless-stopped
+    ports: ["127.0.0.1:8000:8000"]
+    environment:
+      ORACLE_API_TOKEN: ${ORACLE_API_TOKEN:?Inject a service token from your secret manager}
+      ORACLE_DB: /app/data/oracle.sqlite3
+    volumes: ["oracle-data:/app/data"]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+  paper-worker:
+    build: .
+    restart: unless-stopped
+    command: ["python", "-m", "oracle.worker"]
+    healthcheck:
+      disable: true
+    environment:
+      ORACLE_DB: /app/data/oracle.sqlite3
+    volumes: ["oracle-data:/app/data"]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+volumes:
+  oracle-data:
